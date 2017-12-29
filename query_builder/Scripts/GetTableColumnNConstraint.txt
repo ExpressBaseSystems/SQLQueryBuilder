@@ -1,0 +1,29 @@
+﻿SELECT TCols.*, CCols.constraint_type FROM
+(SELECT
+	T.table_name, C.column_name, C.data_type
+FROM 
+    information_schema.tables T,
+	information_schema.columns C
+WHERE
+	T.table_name = C.table_name AND
+    T.table_schema='public') TCols
+LEFT JOIN
+(SELECT 
+ 	CCU.table_name, CCU.column_name, TC.constraint_type 
+FROM
+	information_schema.table_constraints TC,
+ 	information_schema.constraint_column_usage CCU
+WHERE
+ 	TC.constraint_name=CCU.constraint_name AND
+ 	(TC.constraint_type = 'PRIMARY KEY' OR TC.constraint_type = 'FOREIGN KEY') AND
+ 	TC.table_schema='public') CCols
+ON 
+	CCols.table_name=TCols.table_name AND
+    CCols.column_name=TCols.column_name
+ORDER BY
+	table_name, column_name
+
+ 
+
+
+
