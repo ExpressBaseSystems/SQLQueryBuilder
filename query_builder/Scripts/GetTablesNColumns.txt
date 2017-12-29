@@ -1,0 +1,11 @@
+﻿SELECT
+	T.table_name, C.column_name, C.data_type
+FROM 
+    information_schema.tables T,
+	information_schema.columns C
+
+WHERE
+	T.table_name = C.table_name AND
+    T.table_schema='public'
+ORDER BY
+	T.table_name, C.column_name;
