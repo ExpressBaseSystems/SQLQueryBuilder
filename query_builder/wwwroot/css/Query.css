@@ -1,0 +1,17 @@
+﻿.container-fluid{
+    background-color:white;
+    height:100%;
+   
+}
+.head{
+    background-color:aquamarine;
+    height:50px;
+    width:100%;
+}
+.col-sm-3{
+    background-color:burlywood;
+   
+    height:400px;
+    border-right:solid;
+    border-color:blue;
+}
