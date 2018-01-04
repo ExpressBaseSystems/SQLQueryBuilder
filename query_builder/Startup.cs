@@ -43,7 +43,7 @@ namespace query_builder
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=queryController}/{action=Home}/{id?}");
+                    template: "{controller=QueryController}/{action=Home}/{id?}");
             });
         }
     }
