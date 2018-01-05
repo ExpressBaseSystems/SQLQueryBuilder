@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Npgsql;
 using query_builder.Models;
+using SQLQuerybuilder.Models;
 
 
 
