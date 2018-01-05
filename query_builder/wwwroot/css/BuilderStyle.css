@@ -15,4 +15,6 @@
     border-right: 1px solid darkslateblue;
     height: 400px;
 }
-
+.row {
+    border-bottom: 1px solid darkslateblue;
+}
