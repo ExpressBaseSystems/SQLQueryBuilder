@@ -16,3 +16,26 @@
     border-right: 1px solid darkslateblue;
     height: 400px;
 }
+
+.row {
+    border-bottom: 1px solid darkslateblue;
+}
+.col-sm-9{
+    background:white;
+}
+.table {
+   
+    width: 100px;
+    height: 150px;
+    border: 2px solid darkslateblue;
+}
+#tbhd {
+    width: 100px;
+    height: 30px;
+    color:white;
+    background-color: darkslateblue;
+}
+#Row{
+    width:100px;
+    height:120px;
+}
