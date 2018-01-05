@@ -116,7 +116,7 @@ namespace query_builder.Controllers
             }
             string json = JsonConvert.SerializeObject(vals, Formatting.Indented);
             ViewBag.text = "col";
-            ViewBag.dict = vals;
+            ViewBag.dict = json;
             return View();
         }
     }
