@@ -37,6 +37,9 @@ namespace query_builder
                 app.UseExceptionHandler("/Home/Error");
             }
 
+
+
+
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
