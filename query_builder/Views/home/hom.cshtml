@@ -1,6 +1,6 @@
 ﻿
 <title>Untitled Document</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet" />
 <link href="~/css/Query.css" rel="stylesheet" type="text/css" />
@@ -11,24 +11,28 @@
 <script>
     var databaseObject = @Html.Raw(ViewBag.dict);
     console.log(databaseObject);
-    </script>
-    <body>
-        <div class="container-fluid">
-            <div class="header">
-                <p>SQL Syntax</p>
-            </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <br />
-                    
-                    <ul id="tables-cont"></ul>
-                </div>
-                <div class="col-sm-9">
-
-                </div>
-            </div>
+</script>
+<body>
+    <div class="container-fluid">
+        <div class="header">
+            <p>SQL Syntax</p>
         </div>
-    </body>
-    <script>
-        var builder = new QueryBuilder(databaseObject);
-    </script>
+        <dIv class="row">
+            <div class="col-sm-3">
+                <br />
+                <input type="search" name="sdfgghf" class="x" id="x" />
+                <ul id="tables-cont"></ul>
+            </div>
+
+            <div class="col-sm-9 drop">
+               
+
+               
+
+            </div>
+        </dIv>
+    </div>
+</body>
+<script>
+    var builder = new Querybuilder(databaseObject);
+</script>
