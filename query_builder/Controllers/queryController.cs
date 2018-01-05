@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Npgsql;
 using query_builder.Models;
 
@@ -16,7 +17,7 @@ namespace query_builder.Controllers
     public class QueryController : Controller
     {
         // GET: /<controller>/
-        public IActionResult Home()
+        public IActionResult Builder()
         {
             Dictionary<string, List<Coloums>> vals = new Dictionary<string, List<Coloums>>();
 
@@ -86,11 +87,11 @@ namespace query_builder.Controllers
                         key = dr["table_name"] as string;
                         var col = new Coloums()
                         {
-                                cname = dr["column_name"] as string,
-                                type = dr["data_type"] as string,
-                                constraints = dr["constraint_type"] as string,
-                                foreign_tnm = dr["foreign_table_name"] as string,
-                                foreign_cnm = dr["foreign_column_name"] as string
+                            cname = dr["column_name"] as string,
+                            type = dr["data_type"] as string,
+                            constraints = dr["constraint_type"] as string,
+                            foreign_tnm = dr["foreign_table_name"] as string,
+                            foreign_cnm = dr["foreign_column_name"] as string
                         };
                         List<Coloums> list = new List<Coloums>();
                         list.Add(col);
@@ -107,18 +108,19 @@ namespace query_builder.Controllers
                             foreign_cnm = dr["foreign_column_name"] as string
                         };
                         vals[key].Add(col);
-                        
                     }
 
                 }
                 con.Close();
             }
+            string json = JsonConvert.SerializeObject(vals, Formatting.Indented);
             ViewBag.text = "col";
             ViewBag.dict = vals;
             return View();
         }
     }
- }
+}
+ 
     
 
 
