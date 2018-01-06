@@ -1,9 +1,17 @@
-﻿var QueryBuilder = function (databaseObject) {
-    this.DbObject = databaseObject;
+﻿var QueryBuilder = function (object) {
+    this.TableSchema = object;
 
-    this.init = function () {
-
+    this.appendTableNames = function () {
+        for (var key in this.TableSchema) {
+            $("#tables-cont").append(`<li>${key}</li>`);
+        }      
     }
 
+    this.init = function () {
+        this.appendTableNames();
+    };
     this.init();
-};
+
+   
+    });
+}
