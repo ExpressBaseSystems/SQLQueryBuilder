@@ -17,25 +17,40 @@
     height: 400px;
 }
 
-.row {
+.one {
     border-bottom: 1px solid darkslateblue;
 }
 .col-sm-9{
     background:white;
-}
-.table {
    
-    width: 100px;
-    height: 150px;
+   
+}
+.drop {
+cursor:move;
+}
+
+.table {
+    width: 150px;
+   
     border: 2px solid darkslateblue;
+   
+    
 }
+
 #tbhd {
-    width: 100px;
-    height: 30px;
-    color:white;
+    width: 148px;
+    height: 40px;
+    color: white;
     background-color: darkslateblue;
+  
 }
-#Row{
-    width:100px;
-    height:120px;
+
+#Row {
+    width: 150px;
+    height: 150px;
+    overflow-y: scroll;
 }
+
+
+
+
