@@ -5,6 +5,7 @@
 <link href="~/css/BuilderStyle.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+<script src="~/js/queryBuilder.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript"></script>
 <script>
     var databaseObject = @Html.Raw(ViewBag.dict);
@@ -12,18 +13,22 @@
 </script>
 <body>
     <div class="container-fluid">
-          <div class="header">
-                <p>SQL Syntax</p>
-           </div>
-           <dIv class="row">
-                <div class="col-sm-3">
-                    <br />
-                    <input type="search" />
+        <div class="header">
+            <p>SQL Syntax</p>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 ">
+                <br />
+                <input type="search" />
+                <ul id="tables-cont"></ul>
             </div>
-            <div class="col-sm-9">
-                
+            <div class="col-sm-9 drop">
+                <br />
+                <br />
+               
+
             </div>
-        </dIv>
+        </div>
     </div>
 </body>
 <script>
