@@ -20,7 +20,7 @@
         this.dropObj = $(ui.draggable);
         this.tableName = $(ui.draggable).attr('tname');
         this.droploc.append(`<div class="table-${this.tableName}" style="positon:absolute;top:;left:;"> <div class="Table">
-                    <div id="tbhd">
+                    <div id="heading">
                         ${this.tableName}
                     </div>
                     <div id="Row">
