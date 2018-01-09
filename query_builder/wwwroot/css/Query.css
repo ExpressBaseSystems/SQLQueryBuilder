@@ -1,17 +1,41 @@
-﻿.container-fluid{
-    background-color:white;
-    height:100%;
-   
+﻿.container-fluid {
+    background: white;
+    width: 100%;
 }
-.head{
-    background-color:aquamarine;
-    height:50px;
-    width:100%;
+
+.header {
+    background: darkslateblue;
+    color: white;
+    font-size: medium;
+    height: 50px;
+    padding: 10px 30px;
+    font-weight: bold
 }
-.col-sm-3{
-    background-color:burlywood;
+
+.col-sm-3 {
+    border-right: 1px solid darkslateblue;
+    height: 400px;
+}
+
+.row {
+    border-bottom: 1px solid darkslateblue;
+}
+.col-sm-9{
+    background:white;
+}
+.table {
    
-    height:400px;
-    border-right:solid;
-    border-color:blue;
+    width: 100px;
+    height: 150px;
+    border: 2px solid darkslateblue;
+}
+#tbhd {
+    width: 100px;
+    height: 30px;
+    color:white;
+    background-color: darkslateblue;
+}
+#Row{
+    width:100px;
+    height:120px;
 }
