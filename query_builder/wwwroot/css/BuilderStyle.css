@@ -1,8 +1,8 @@
 ﻿.container-fluid {
-                 background: white;
-                 width: 100%;
+    background: white;
+    width: 100%;
+}
 
-                 }
 .header {
     background: darkslateblue;
     color: white;
@@ -11,13 +11,40 @@
     padding: 10px 30px;
     font-weight: bold
 }
+
 .col-sm-3 {
     border-right: 1px solid darkslateblue;
     height: 400px;
 }
+
 .row {
-    border-bottom: 2px solid darkslateblue;
+    border-bottom: 1px solid darkslateblue;
 }
 
+.col-sm-9 {
+    background: white;
+}
+
+.drop {
+    cursor: move;
+}
+
+.table {
+    width: 150px;
+    border: 2px solid darkslateblue;
+}
+
+#tbhd {
+    width: 148px;
+    height: 40px;
+    color: white;
+    background-color: darkslateblue;
+}
+
+#Row {
+    width: 150px;
+    height: 150px;
+    overflow-y: scroll;
+}
 
 
