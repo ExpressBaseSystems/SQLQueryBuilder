@@ -25,6 +25,12 @@
    
    
 }
+.query_disply{
+   
+
+    height:auto;
+    width:700px;
+}
 .drop {
 cursor:move;
 }
@@ -49,6 +55,20 @@ cursor:move;
     width: 150px;
     height: 150px;
     overflow-y: scroll;
+}
+.box {
+    width: 1000px;
+    border: 3px solid darkslateblue;
+}
+
+#cond {
+    background: darkslateblue;
+    color: white;
+    font-size: 10px;
+    height: 30px;
+    padding: 10px 30px;
+    font-weight: bold;
+    text-align: center;
 }
 
 
