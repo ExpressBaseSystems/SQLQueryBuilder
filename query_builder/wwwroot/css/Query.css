@@ -14,16 +14,14 @@
 
 .col-sm-3 {
     border-right: 1px solid darkslateblue;
-    height: 400px;
+    height: 700px;
 }
 
-.one {
+.row {
     border-bottom: 1px solid darkslateblue;
 }
 .col-sm-9{
     background:white;
-   
-   
 }
 .query_disply{
    
@@ -36,25 +34,27 @@ cursor:move;
 }
 
 .table {
-    width: 150px;
    
+    width: 100px;
     border: 2px solid darkslateblue;
-   
-    
 }
-
 #tbhd {
-    width: 148px;
-    height: 40px;
-    color: white;
+    width: 100px;
+    height: 30px;
+    color:white;
     background-color: darkslateblue;
-  
+    text-align:center;
 }
-
-#Row {
-    width: 150px;
-    height: 150px;
-    overflow-y: scroll;
+#Row{
+    width:100px;
+    height:120px;
+}
+.condition {
+    border: 2px solid darkslateblue;
+}
+#cond {
+    background: darkslateblue;
+    color: white;
 }
 .box {
     width: 1000px;

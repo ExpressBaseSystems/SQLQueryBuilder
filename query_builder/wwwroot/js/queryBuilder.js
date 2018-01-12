@@ -1,4 +1,6 @@
-﻿var QueryBuilder = function (object) {
+﻿
+var QueryBuilder = function (object)
+{
     this.TableSchema = object;
     this.count = 0;
     this.columnName = [];

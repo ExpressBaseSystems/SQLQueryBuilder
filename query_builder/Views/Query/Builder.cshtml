@@ -24,11 +24,77 @@
             </div>
             <div class="col-sm-9 drop">
                 <br />
-                <br />
-               
-
             </div>
-        </div>
+        </div><br />
+        <div id="condition_box">
+            <table class="box">
+                <thead>
+                    <tr id="cond">
+                                             
+                        <th scope="col">Expression</th>
+                        <th scope="col">Alias</th>
+                        <th scope="col">Sort Type</th>
+                        <th scope="col">Sort Order</th>
+                        <th scope="col">Aggregate</th>
+                        <th scope="col">Grouping</th>
+                        <th scope="col">Criteria</th>
+                      
+
+                    </tr>
+                </thead>
+                <tbody class="inpt">
+
+                    <tr>
+
+                       
+                        <td><input type="text" class="form-control" /></td>
+                        <td><input type="text" class="form-control" /></td>
+                        <td>
+                            @*<form>*@
+
+                        <select class="target">
+                            <option value="option1" selected="selected">acending</option>
+                            <option value="option2">decending </option>
+                        </select>
+                        @*</form>*@
+                    </td>
+                    <td>
+
+                        <select class="target">
+                            <option value="option1" selected="selected">acending</option>
+                            <option value="option2">decending </option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="achu1" aria-label="Aggregate">
+                            <option value=""></option>
+                            <option value="Avg">Avg</option>
+                            <option value="Avg Distinct">Avg Distinct</option>
+                            <option value="Count">Count</option>
+                            <option value="Count Distinct">Count Distinct</option>
+                            <option value="Max">Max</option>
+                            <option value="Max Distinct">Max Distinct</option>
+                            <option value="Min">Min</option>
+                            <option value="Min Distinct">Min Distinct</option>
+                            <option value="Sum">Sum</option>
+                            <option value="Sum Distinct">Sum Distinct</option>
+                        </select>
+                    </td>
+                    <td><input type="text" class="form-control" /></td>
+                    <td><input type="text" class="form-control" /></td>
+                   
+                </tr>
+
+
+
+
+            </tbody>
+        </table>
+    </div>
+
+    <br />
+    <div class="display_query">
+    </div>
     </div>
 </body>
 <script>
