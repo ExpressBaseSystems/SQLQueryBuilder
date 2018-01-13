@@ -112,6 +112,29 @@ namespace query_builder.Controllers
                     }
 
                 }
+                //List<Condition> userList = new List<Condition>();
+                //userList.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
+                //userList.Add(new Condition { ColumnName = "rajz", Operator = "="});
+                //userList.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
+
+                ConditionGroup cg = new ConditionGroup();
+                cg.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
+                cg.Add(new Condition { ColumnName = "rajz", Operator = "=" });
+                cg.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
+                cg.InternalAndOrOr = "AND";
+                cg.ExternalAndOrOr = "AND";
+
+                ConditionGroup cg1 = new ConditionGroup();
+                cg1.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
+                cg1.Add(new Condition { ColumnName = "rajz", Operator = "=" });
+                cg1.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
+                cg1.InternalAndOrOr = "OR";
+               
+                WhereCollection where = new WhereCollection();
+                where.Add(cg);
+                where.Add(cg1);
+                var x = where.GetWhereCondition();
+
                 con.Close();
             }
             string json = JsonConvert.SerializeObject(vals, Formatting.Indented);
