@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Npgsql;
-using query_builder.Models;
+//using query_builder.Models;
 using SQLQuerybuilder.Models;
 
 
@@ -18,7 +18,7 @@ namespace query_builder.Controllers
     public class QueryController : Controller
     {
         // GET: /<controller>/
-        public IActionResult Builder()
+        public IActionResult New_view()
         {
             Dictionary<string, List<Coloums>> vals = new Dictionary<string, List<Coloums>>();
 

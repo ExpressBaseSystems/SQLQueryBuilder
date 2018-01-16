@@ -1,0 +1,49 @@
+﻿<title>Untitled Document</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.3/jquery.contextMenu.css" rel="stylesheet" />
+<link href="~/css/BuilderStyle.css" rel="stylesheet" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.3/jquery.contextMenu.js"></script>
+
+<script src="~/js/queryBuilder.js" type="text/javascript"></script>
+<script>
+    var databaseObject = @Html.Raw(ViewBag.dict);
+    console.log(databaseObject);
+</script>
+<body>
+    <div class="container-fluid builder-window">
+        <div class="row builder-window-row">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 Builder-toolbox">
+                <br />
+                <br />
+                <br />
+                <ul id="tables-cont"></ul>
+                <ul id="column-cont"></ul>
+            </div>
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 Builder-work-pane">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="active"><a href="#Design" aria-controls="home" role="tab" data-toggle="tab">Design</a></li>
+                    <li ><a href="#Sort" aria-controls="Sort" role="tab" data-toggle="tab">Sort</a></li>
+                    <li ><a href="#Condition" aria-controls="Condition" role="tab" data-toggle="tab">Condition</a></li>
+                    <li ><a href="#Aggregate" aria-controls="Aggregate" role="tab" data-toggle="tab">Aggregate</a></li>
+                    <li ><a href="#Query" aria-controls="Query" role="tab" data-toggle="tab">Query</a></li>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <div class="tab-pane active" id="Design"><div class="drop" style="height:700px;width:100%"></div></div>
+                    <div class="tab-pane" id="Sort"> 2.</div>
+                    <div class="tab-pane" id="Condition"> 3.</div>
+                    <div class="tab-pane" id="Aggregate"> 4.</div>
+                    <div class="tab-pane" id="Query"> 5 ..</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    var builder = new QueryBuilder(databaseObject);
+</script>
