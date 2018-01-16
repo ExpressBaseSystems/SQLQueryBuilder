@@ -15,14 +15,14 @@ using SQLQuerybuilder.Models;
 
 namespace query_builder.Controllers
 {
-    public class QueryController : Controller
+    public class QBController : Controller
     {
         // GET: /<controller>/
-        public IActionResult New_view()
+        public IActionResult QueryBuilder()
         {
             Dictionary<string, List<Coloums>> vals = new Dictionary<string, List<Coloums>>();
 
-            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
+            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=abby; CommandTimeout=500;"))
             {
                 DataTable dt = new DataTable();
                 con.Open();

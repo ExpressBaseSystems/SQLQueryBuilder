@@ -46,7 +46,7 @@ namespace query_builder
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=QueryController}/{action=Home}/{id?}");
+                    template: "{controller=QB}/{action=QueryBuilder}/{id?}");
             });
         }
     }

@@ -6,7 +6,18 @@ var QueryBuilder = function (object) {
     this.tbName = [];
     this.appendTableNames = function () {
         for (var key in this.TableSchema) {
-            $("#tables-cont").append(`<li class="dragable" tname="${key}">${key}</li>`);
+            $("#tables-cont").append(`<ul class="treeview"><li class="dragable" tname="${key}">${key}
+               
+                	<ul>
+            			<li><a href="#"></a></li>
+            			<li><a href="#"></a>
+            				
+            			</li>
+            			<li><a href="#"></a></li>
+            			<li><a href="#"></a></li>
+            		</ul>
+            	
+            </ul></li>`);
         }
 
         $(".dragable").draggable({
@@ -14,10 +25,9 @@ var QueryBuilder = function (object) {
             revert: "invalid",
             helper: "clone",
             appendTo: "body",
-            drag: function (event, ui)
-            {
+            drag: function (event, ui) {
                 $(ui.helper).css({ "background": "white", "border": "1px dotted black", "width": "200px" });
-               $(ui.helper).children().find('i').css({ "font-size": "50px", "background-color": "transparent" });
+                $(ui.helper).children().find('i').css({ "font-size": "50px", "background-color": "transparent" });
             }
         });
         $('.drop').droppable({
@@ -44,7 +54,10 @@ var QueryBuilder = function (object) {
                 </div>`);
             for (i = 0; i < this.TableSchema[this.tableName].length; i++) {
                 var item = this.TableSchema[this.tableName][i];
-                $("#" + this.objId + " #Row").append(`<div class="col" cnm="${item.cname}" datatp="${item.type}" con="${item.constraints}" fortnm="${item.foreign_tnm}" forcnm="${item.foreign_cnm}" ><span><input type="checkbox" id="mycheck" /></span>&nbsp&nbsp<span id="ann">${item.cname}</span>&nbsp&nbsp<span>${item.type}</span>
+                $("#" + this.objId + " #Row").append(`<div class="col" tabindex="1" id="${this.tableName}-col${i}" cnm="${item.cname}" 
+                datatp="${item.type}" con="${item.constraints}" fortnm="${item.foreign_tnm}" 
+                forcnm="${item.foreign_cnm}" ><span><input type="checkbox" id="mycheck" /></span>
+                <span id="ann">${item.cname}</span><span>${item.type}</span><span class="icon"></span>
                 </div>`);
 
             }
@@ -54,6 +67,7 @@ var QueryBuilder = function (object) {
         else {
             $(this.dropObj).css({ top: this.top, left: this.left });
         }
+        $(".col").on("focus", this.builderContextmenu.bind(this));
     };
     this.get_parent = function (event) {
         //$.each($(event.target).closest(".col").children(), this.get_sibiling.bind(this));
@@ -85,6 +99,8 @@ var QueryBuilder = function (object) {
 
     };
 
+
+
     //this.get_sibiling = function (i, obj)
     //{        
     //    if ($(obj).children().prop("checked")) {
@@ -99,8 +115,34 @@ var QueryBuilder = function (object) {
 
 
     //}
+    this.builderContextmenu = function (e) {
+        var id = $(e.target).attr("id");
+        $.contextMenu({
+            selector: "#" + id,
+            items: {
+                "fold1": {
+                    "name": "Sort",
+                    "items": {
+                        "Ascending": { "name": "Ascending", icon: "", callback: this.sortorder.bind(this) },
+
+                        "Descending": { "name": "Descending", icon: "", callback: this.sortorder.bind(this) }
+                    }
+
+                }
+
+            }
+        });
+    }
+    this.sortorder = function (itemKey, opt, rootMenu, originalEvent) {
+        var id = $(opt.selector).attr("id");
+        if (itemKey === "Ascending")
+            $("#" + id).children(".icon").empty().append("<i class='fa fa-sort-asc'></i>");
+        else 
+            $("#" + id).children(".icon").empty().append("<i class='fa fa-sort-desc'></i>");/* $(".context-menu-active")*/
+    }
     this.init = function () {
-        this.appendTableNames();
+        this.appendTableNames();        
+        //this.sortorder();
     };
     this.init();
 };
