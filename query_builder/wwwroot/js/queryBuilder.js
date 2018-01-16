@@ -1,27 +1,61 @@
 ﻿
 var QueryBuilder = function (object) {
+    $.fn.extend({
+        treeview: function () {
+            return this.each(function () {
+                // Initialize the top levels;
+                var tree = $(this);
+
+                tree.addClass('treeview-tree');
+                tree.find('li').each(function () {
+                    var stick = $(this);
+                });
+                tree.find('li').has("ul").each(function () {
+                    var branch = $(this); //li with children ul
+
+                    branch.prepend("<i class='tree-indicator glyphicon glyphicon-chevron-right'></i>");
+                    branch.addClass('tree-branch');
+                    branch.on('click', function (e) {
+                        if (this == e.target) {
+                            var icon = $(this).children('i:first');
+
+                            icon.toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+                            $(this).children().children().toggle();
+                        }
+                    })
+                    branch.children().children().toggle();
+
+                    /**
+                     *	The following snippet of code enables the treeview to
+                     *	function when a button, indicator or anchor is clicked.
+                     *
+                     *	It also prevents the default function of an anchor and
+                     *	a button from firing.
+                     */
+                    branch.children('.tree-indicator, button, a').click(function (e) {
+                        branch.click();
+
+                        e.preventDefault();
+                    });
+                });
+            });
+        }
+    });
     this.TableSchema = object;
     this.count = 0;
     this.columnName = [];
     this.tbName = [];
+    this.drawTree = false;
     this.appendTableNames = function () {
         for (var key in this.TableSchema) {
-            $("#tables-cont").append(`<ul class="treeview"><li class="dragable" tname="${key}">${key}
-               
-                	<ul>
-            			<li><a href="#"></a></li>
-            			<li><a href="#"></a>
-            				
-            			</li>
-            			<li><a href="#"></a></li>
-            			<li><a href="#"></a></li>
-            		</ul>
-            	
-            </ul></li>`);
+            $("#tables-cont").append(`<ul class="treeview"><li class="dragable" tname="${key}">${key}   
+            </li></ul>`);
         }
+     
+
+
 
         $(".dragable").draggable({
-
             revert: "invalid",
             helper: "clone",
             appendTo: "body",
@@ -52,6 +86,15 @@ var QueryBuilder = function (object) {
 
                     </div>
                 </div>`);
+            $.each(this.dropObj.parent().parent().children() , function (i, obj) {
+                $(obj).removeClass("tre");
+            });
+            this.dropObj.parent().addClass("tre");
+            if (!this.dropObj.parent().hasClass("treeview-tree")) {
+                this.dropObj.append("<ul></ul>");
+            }
+            //this.dropObj.children("i").remove();
+           
             for (i = 0; i < this.TableSchema[this.tableName].length; i++) {
                 var item = this.TableSchema[this.tableName][i];
                 $("#" + this.objId + " #Row").append(`<div class="col" tabindex="1" id="${this.tableName}-col${i}" cnm="${item.cname}" 
@@ -59,7 +102,10 @@ var QueryBuilder = function (object) {
                 forcnm="${item.foreign_cnm}" ><span><input type="checkbox" id="mycheck" /></span>
                 <span id="ann">${item.cname}</span><span>${item.type}</span><span class="icon"></span>
                 </div>`);
-
+                if (!this.dropObj.parent().hasClass("treeview-tree")) {
+                    this.dropObj.children("ul").append(`<li>"${item.cname}"</li>`);
+                    this.drawTree = true;
+                }
             }
             $('input[type="checkbox"]').on("click", this.get_parent.bind(this));
             $(".table-" + this.tableName).draggable({ containment: ".drop" });
@@ -68,6 +114,14 @@ var QueryBuilder = function (object) {
             $(this.dropObj).css({ top: this.top, left: this.left });
         }
         $(".col").on("focus", this.builderContextmenu.bind(this));
+        //fddddddd
+        if (this.drawTree) {
+            $('.tre').each(function () {
+                var tree = $(this);
+                tree.treeview();
+            });
+            this.drawTree = false;
+        }
     };
     this.get_parent = function (event) {
         //$.each($(event.target).closest(".col").children(), this.get_sibiling.bind(this));
@@ -100,8 +154,7 @@ var QueryBuilder = function (object) {
     };
 
 
-
-    //this.get_sibiling = function (i, obj)
+     //this.get_sibiling = function (i, obj)
     //{        
     //    if ($(obj).children().prop("checked")) {
     //        if ($(obj).next().attr("id") == "ann") {
@@ -110,25 +163,29 @@ var QueryBuilder = function (object) {
     //        }
     //    }
     //    else {
-
     //    }
-
-
     //}
+
+    
+
     this.builderContextmenu = function (e) {
         var id = $(e.target).attr("id");
         $.contextMenu({
             selector: "#" + id,
             items: {
                 "fold1": {
+                    
                     "name": "Sort",
                     "items": {
                         "Ascending": { "name": "Ascending", icon: "", callback: this.sortorder.bind(this) },
 
                         "Descending": { "name": "Descending", icon: "", callback: this.sortorder.bind(this) }
                     }
+                },
+                "fold2": { "name": "where", icon: "", callback: this.wherecondition.bind(this) }
 
-                }
+                
+                
 
             }
         });
@@ -139,10 +196,21 @@ var QueryBuilder = function (object) {
             $("#" + id).children(".icon").empty().append("<i class='fa fa-sort-asc'></i>");
         else 
             $("#" + id).children(".icon").empty().append("<i class='fa fa-sort-desc'></i>");/* $(".context-menu-active")*/
+
+      
     }
+    this.wherecondition = function (itemKey, opt, rootMenu, originalEvent) {
+        this.id = $(opt.selector).attr("id");
+        $('.nav-tabs a[href="#Condition"]').tab("show");
+        this.condition();
+    }
+
+    this.condition = function () {
+
+    };
     this.init = function () {
         this.appendTableNames();        
-        //this.sortorder();
+       
     };
     this.init();
 };
