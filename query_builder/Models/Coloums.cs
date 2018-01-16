@@ -20,7 +20,6 @@ namespace SQLQuerybuilder.Models
 
         public string foreign_cnm { set; get; }
     }
-    
 
     public class WhereCollection : List<ConditionGroup>
     {
@@ -36,7 +35,7 @@ namespace SQLQuerybuilder.Models
             }
 
             return _whereClause + ")";
-        
+
         }
     }
 
@@ -48,8 +47,8 @@ namespace SQLQuerybuilder.Models
 
         public string GetClause(bool isLast)
 
-        
-{
+
+        {
             string _clause = "(";
             int pos = 1;
             foreach (Condition c in this)
@@ -67,6 +66,7 @@ namespace SQLQuerybuilder.Models
         public string ColumnName { get; set; }
         public string Operator { get; set; }
         public string Value { get; set; }
-       
+
     }
+
 }
