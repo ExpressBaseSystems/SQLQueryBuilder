@@ -88,10 +88,27 @@
     border-bottom: 1px solid black;
 }
 /*drag table--------------*/
+/*.col > .fa fa-sort {
+   background-size: 10px 10px;
+    background-repeat: no-repeat;
+    background-position: right;
+}*/
 /*tree..........................*/
-div.treeview ul:first-child:before {
-    display: none;
+div.treeview {
+    min-width: 100px;
+    min-height: 100px;
+    max-height: 256px;
+    overflow: auto;
+    padding: 4px;
+    margin-bottom: 20px;
+    color: #369;
+    border: solid 1px;
+    border-radius: 4px;
 }
+
+    div.treeview ul:first-child:before {
+        display: none;
+    }
 
 .treeview, .treeview ul {
     margin: 0;
@@ -140,6 +157,7 @@ div.treeview ul:first-child:before {
         top: 1em;
         left: 0
     }
+
 .tree-indicator {
     margin-right: 5px;
     cursor: pointer;
