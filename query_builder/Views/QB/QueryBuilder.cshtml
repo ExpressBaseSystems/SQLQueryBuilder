@@ -5,13 +5,12 @@
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.3/jquery.contextMenu.css" rel="stylesheet" />
 <link href="~/css/BuilderStyle.css" rel="stylesheet" type="text/css" />
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.3/jquery.contextMenu.js"></script>
-
 <script src="~/js/queryBuilder.js" type="text/javascript"></script>
+<script src="~/js/secondqueryBuilder.js" type="text/javascript"></script>
 <script>
     var databaseObject = @Html.Raw(ViewBag.dict);
     console.log(databaseObject);
@@ -24,23 +23,39 @@
                 <br />
                 <br />
                 <ul id="tables-cont"></ul>
-                <ul id="column-cont"></ul>
-            </div>
-            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 Builder-work-pane">
+             </div>
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 Builder-work-pane pd-0">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="active"><a href="#Design" aria-controls="home" role="tab" data-toggle="tab">Design</a></li>
-                    <li ><a href="#Sort" aria-controls="Sort" role="tab" data-toggle="tab">Sort</a></li>
-                    <li ><a href="#Condition" aria-controls="Condition" role="tab" data-toggle="tab">Condition</a></li>
-                    <li ><a href="#Aggregate" aria-controls="Aggregate" role="tab" data-toggle="tab">Aggregate</a></li>
-                    <li ><a href="#Query" aria-controls="Query" role="tab" data-toggle="tab">Query</a></li>
+                    <li><a href="#Sort" aria-controls="Sort" role="tab" data-toggle="tab">Sort</a></li>
+                    <li><a href="#Condition" aria-controls="Condition" role="tab" data-toggle="tab">Condition</a></li>
+                    <li><a href="#Aggregate" aria-controls="Aggregate" role="tab" data-toggle="tab">Aggregate</a></li>
+                    <li><a href="#Query" aria-controls="Query" role="tab" data-toggle="tab">Query</a></li>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div class="tab-pane active" id="Design"><div class="drop" style="height:700px;width:100%"></div></div>
-                    <div class="tab-pane" id="Sort"> 2.</div>
-                    <div class="tab-pane" id="Condition"> 3.</div>
-                    <div class="tab-pane" id="Aggregate"> 4.</div>
-                    <div class="tab-pane" id="Query"> 5 ..</div>
+                    <div class="tab-pane active" id="Design"><div class="DesignPane drop" style="height:700px;width:100%"></div></div>
+                    <div class="tab-pane" id="Sort"><div class="SortPane display"></div></div>
+                    <div class="tab-pane row" id="Condition">
+                        <div class="ConditionPane" style="height:700px;width:100%"></div>
+                    </div>
+                        @*<div class="col-md-8 col-sm-9">
+                            <div class="condition_group1" id="cond1"></div><br />
+                            <div class="condition_group2" id="cond2"></div>
+                        </div>
+                        <div class="col-md-4 col-sm-3">
+                          
+                            <canvas id="myCanvas" style="height:500px"></canvas>
+                            <select id="extern" style="position:absolute;top:200px;left:105px">
+                                <option value="and">AND</option>
+                                <option value="or">OR</option>
+                            </select>
+                        </div>*@
+                   
+                    <div class="tab-pane " id="Aggregate"></div>
+                    <div class="tab-pane QueryPane" id="Query">
+                        <textarea id="querywindow"></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -48,4 +63,8 @@
 </body>
 <script>
     var builder = new QueryBuilder(databaseObject);
+   
 </script>
+
+
+

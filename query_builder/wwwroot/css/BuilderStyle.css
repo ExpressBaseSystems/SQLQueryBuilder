@@ -1,6 +1,9 @@
-﻿/*new*/
-.pd-0{
-    padding:0;
+﻿.ConditionPane {
+    padding: 0px 0px 0px 0px;
+}
+/*new*/
+.pd-0 {
+    padding: 0;
 }
 .builder-window {
     height: 100vh;
@@ -60,11 +63,11 @@
 }
 
 .tab-pane {
-    padding: 15px 0;
+   
 }
 
 .tab-content {
-    padding: 20px
+  
 }
 
 .card {
@@ -157,3 +160,16 @@ div.treeview ul:first-child:before {
     padding: 0px 0px 0px 0px;
     outline: 0;
 }
+/*where condition*/
+.dragables{
+    font-size:small;
+} 
+
+.where_cond_grp {
+    border: 1px solid #ccc;
+    height: 150px;
+    width: 500px;
+    
+}
+
+

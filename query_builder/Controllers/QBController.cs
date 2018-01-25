@@ -18,11 +18,12 @@ namespace query_builder.Controllers
     public class QBController : Controller
     {
         // GET: /<controller>/
+        [HttpGet]
         public IActionResult QueryBuilder()
         {
             Dictionary<string, List<Coloums>> vals = new Dictionary<string, List<Coloums>>();
 
-            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=abby; CommandTimeout=500;"))
+            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
             {
                 DataTable dt = new DataTable();
                 con.Open();
@@ -116,25 +117,7 @@ namespace query_builder.Controllers
                 //userList.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
                 //userList.Add(new Condition { ColumnName = "rajz", Operator = "="});
                 //userList.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
-
-                ConditionGroup cg = new ConditionGroup();
-                cg.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
-                cg.Add(new Condition { ColumnName = "rajz", Operator = "=" });
-                cg.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
-                cg.InternalAndOrOr = "AND";
-                cg.ExternalAndOrOr = "AND";
-
-                ConditionGroup cg1 = new ConditionGroup();
-                cg1.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
-                cg1.Add(new Condition { ColumnName = "rajz", Operator = "=" });
-                cg1.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
-                cg1.InternalAndOrOr = "OR";
-               
-                WhereCollection where = new WhereCollection();
-                where.Add(cg);
-                where.Add(cg1);
-                var x = where.GetWhereCondition();
-
+                //Condition obj = (new JavascriptSerializer()).Deserialize<Condition>(objJson);
                 con.Close();
             }
             string json = JsonConvert.SerializeObject(vals, Formatting.Indented);
@@ -142,10 +125,39 @@ namespace query_builder.Controllers
             ViewBag.dict = json;
             return View();
         }
+        [HttpPost]
+        public string xxxx()
+        {
+            var req = this.HttpContext.Request.Form;
+            
+            var val1 = req["text"];
+            var val2 = req["col"];
+            var val3 = req["operator"];
+            var val4 = req["int_andor"];
+            ConditionGroup cg = new ConditionGroup();
+            cg.Add(new Condition { ColumnName = val2, Operator = val3, Value = val1 });
+            //cg.Add(new Condition { ColumnName = "rajz", Operator = "=" });
+            //cg.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
+            cg.InternalAndOrOr = val4;
+            //cg.ExternalAndOrOr = "AND";
+
+            ConditionGroup cg1 = new ConditionGroup();
+            //cg1.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
+            //cg1.Add(new Condition { ColumnName = "rajz", Operator = "=" });
+            //cg1.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
+            //cg1.InternalAndOrOr = "OR";
+
+            WhereCollection where = new WhereCollection();
+            where.Add(cg);
+          //  where.Add(cg1);
+            var x = where.GetWhereCondition();
+            
+            return null;
+        }
     }
 }
- 
-    
+
+
 
 
 
