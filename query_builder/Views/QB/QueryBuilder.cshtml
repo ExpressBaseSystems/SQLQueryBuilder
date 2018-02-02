@@ -37,7 +37,13 @@
                     <div class="tab-pane active" id="Design"><div class="DesignPane drop" style="height:700px;width:100%"></div></div>
                     <div class="tab-pane" id="Sort"><div class="SortPane display"></div></div>
                     <div class="tab-pane row" id="Condition">
-                        <div class="ConditionPane" style="height:700px;width:100%"></div>
+                        <div class="ConditionPane" style="height:700px;width:100%">
+                            <div class="btn-group" style="left:50px; top:50px;position:relative">
+                                <button type="button" class="btn btn-primary">AND</button>
+                                <button type="button" class="btn btn-primary">OR</button>
+                            </div>
+                            
+                        </div>
                     </div>
                         @*<div class="col-md-8 col-sm-9">
                             <div class="condition_group1" id="cond1"></div><br />
@@ -54,7 +60,6 @@
                    
                     <div class="tab-pane " id="Aggregate"></div>
                     <div class="tab-pane QueryPane" id="Query">
-                        <textarea id="querywindow"></textarea>
                     </div>
                 </div>
             </div>

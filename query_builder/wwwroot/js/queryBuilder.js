@@ -1,4 +1,5 @@
-﻿var QueryBuilder = function (object) {   
+﻿var QueryBuilder = function (object)
+{   
     this.tbName = [];
     this.TableSchema = object;
     this.DesignPane = $(".DesignPane");
@@ -12,8 +13,6 @@
     this.columnName = [];
     this.tbName = [];
     this.array = [];
-    this.a = [];
-    this.r = [];
     this.drawTree = false;
     this.appendTableNames = function ()
     {
@@ -54,13 +53,14 @@
         for (i = 0; i < this.TableSchema[this.tableName].length; i++)
         {
              this.item = this.TableSchema[this.tableName][i];
-             $("#" + $container).append(`<div class="col" tabindex="1" id="${this.tableName}-col${i}" cnm="${this.item.cname}" 
+             $("#" + $container).append(`<div class="col"  tabindex="1" id="${this.tableName}-col${i}" cnm="${this.item.cname}" 
                 datatp="${this.item.type}" con="${this.item.constraints}" fortnm="${this.item.foreign_tnm}" 
                 forcnm="${this.item.foreign_cnm}" ><span><input type="checkbox" id="mycheck" /></span>
                 <span id="ann">${this.item.cname}</span><span>${this.item.type}</span><span class="icon"></span></div>`);
                 this.subtreeappend(); 
                  
         }
+        $('input[type="checkbox"]').on("click", this.get_parent.bind(this));
         $(".col").on("focus", this.builderContextmenu.bind(this));
         this.treeFunction();
     };
@@ -68,7 +68,7 @@
     {
         if (!this.dropObj.parent().hasClass("treeview-tree"))
         {
-            this.dropObj.children("ul").append(`<li class="dragables" colname="${this.item.cname}"  dtp="${this.item.type}">${this.item.cname}</li>`);
+            this.dropObj.children("ul").append(`<li class="dragables" colname="${this.item.cname}"  datatype="${this.item.type}">${this.item.cname}</li>`);
             this.drawTree = true;
         }
         this.whereConObject.makeDroppable();
@@ -89,12 +89,12 @@
     {
        if (this.drawTree)
         {
-            $('.tre').each(function () {
+            $('.tre').each(function (){
                 var tree = $(this);
                 tree.treeview();
             });
             this.drawTree = false;
-           
+            $("#Sort").append(`<div class="sortorder" id="sortorder_${this.tableName}"></div>`);
         }
     }
     this.builderContextmenu = function (e)
@@ -141,6 +141,49 @@
             $(".sortorder").disableSelection();
         });
     };
+    this.get_parent = function (event)
+    {
+        $.each($(event.target).closest(".col").children(), this.get_sibiling.bind(this));
+        obj = $(event.target).parent();
+        if ($(event.target).prop("checked"))
+        {
+            if ($(obj).next().attr("id") == "ann")
+            {
+                this.annamma = $(obj).parent().parent().siblings().text();
+                this.raju = $(obj).next().text();
+                $(".QueryPane").empty();
+                if (this.annamma != this.tbName)
+                {
+                    this.tbName.push(`${this.annamma}`);
+                }
+                //this.columnName.push(`${this.annamma}.${this.raju}`);
+                $(".QueryPane").append(`<span class="sqlkeys">SELECT</span> <span class="colnames">${this.columnName}</span> <span class="sqlkey">FROM</span> <span class="which_table">${this.tbName}</span>`);
+            }
+        }
+        else
+        {
+            this.columnName.pop($(obj).next().text());
+            if (($(obj).parent().parent().siblings().text() != this.tbName))
+            {
+                this.tbName.pop($(obj).parent().parent().siblings().text());
+            }
+            $(".QueryPane").empty();
+            $(".QueryPane").append(`<span class="sqlkeys">SELECT</span> <span class="colnames">${this.columnName}</span> <span class="sqlkey">FROM</span> <span class="which_table">${this.tbName}</span>`);
+        }
+
+    };
+    this.get_sibiling = function (i, obj)
+    {        
+        if ($(obj).children().prop("checked")) {
+            if ($(obj).next().attr("id") == "ann") {
+                this.columnName = $(obj).next().text();
+                $(".QueryPane").append(`<span class="sqlkeys">SELECT</span> <span class="colnames">${this.columnName}</span> <span class="sqlkey">FROM</span> <span class="which_table">${this.tableName}</span>`);
+            }
+        }
+        else
+        {
+        }
+    }
     this.init = function () {
         this.appendTableNames();
         this.makeDroppable();
