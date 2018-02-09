@@ -1,6 +1,8 @@
 ﻿var QueryBuilder = function (object)
 {   
+
     this.tbName = [];
+    this.dragableArray = [];
     this.TableSchema = object;
     this.DesignPane = $(".DesignPane");
     this.SortPane = $(".SortPane");
@@ -42,8 +44,8 @@
         this.tableName = $(ui.draggable).attr('tname');
         this.objId = this.tableName + this.IdCounters["TableCount"]++;
         this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};"> <div class="Table">
-                            <div id="tbhd_${this.tableName}">${this.tableName}</div>
-                             <div id="col-container${this.objId}"></div></div>`);
+                                <div id="tbhd_${this.tableName}">${this.tableName}</div>  
+                                <div id="col-container${this.objId}"></div></div>`);
         this.addColoums("col-container" + this.objId);
         $("#" + this.objId).draggable({ containment: ".DesignPane"});
     };
@@ -70,8 +72,10 @@
         {
             this.dropObj.children("ul").append(`<li class="dragables" colname="${this.item.cname}"  datatype="${this.item.type}">${this.item.cname}</li>`);
             this.drawTree = true;
+            
         }
-        this.whereConObject.makeDroppable();
+        this.whereConObject.makeDroppable(); //call where_query_builder.js
+        this.aggregateObject.makeDroppable(); //call aggregate_query_builder.js
     }
     this.treepusharray = function ()
     {
@@ -120,14 +124,14 @@
         if (itemKey === "Ascending")
         {
             $("#" + id).children(".icon").empty().append("<i class='fa fa-sort-asc'></i>");
-            this.columnName = $(opt.selector).attr("cnm");
+            this.columnNames = $(opt.selector).attr("cnm");
             $('.nav-tabs a[href="#sort"]').tab("show");
             this.sort();
         }
         else
         {
             $("#" + id).children(".icon").empty().append("<i class='fa fa-sort-desc'></i>");/* $(".context-menu-active")*/
-            this.columnName = $(opt.selector).attr("cnm");
+            this.columnNames = $(opt.selector).attr("cnm");
             $('.nav-tabs a[href="#sort"]').tab("show");
             this.sort();
         }
@@ -135,7 +139,15 @@
     }
     this.sort = function ()
     {
-        $("#sortorder_" + this.tableName).append(`<div class="sortbox">${this.columnName}</div>`)
+        var count = $("#sortorder_" + this.tableName).children(".sortbox").length;
+        for (var i = 0; i < count; i++)
+        {
+            if ($($("#sortorder_" + this.tableName).children(".sortbox")[i]).text() === this.columnNames) {
+                $($("#sortorder_" + this.tableName).children(".sortbox")[i]).remove();
+                break;
+            }
+        }
+        $("#sortorder_" + this.tableName).append(`<div class="sortbox">${this.columnNames}</div>`)
         $(function (){
             $(".sortorder").sortable();
             $(".sortorder").disableSelection();
@@ -187,7 +199,8 @@
     this.init = function () {
         this.appendTableNames();
         this.makeDroppable();
-        this.whereConObject = new SqlWhereCondition();
+        this.whereConObject = new SqlWhereClause();
+        this.aggregateObject = new SqlAggregate();
     };
     this.init();
 }

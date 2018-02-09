@@ -6,9 +6,10 @@
     this.text = ["=", "!="];
     this.boolean = ["=", "=!"];
     this.time = ["=", "=!"];
-    this.ConditionPane = $(".ConditionPane");
+    this.ConditionPane = $(".conditiong-gp-container");
     this.where_cond_grp = $(".where_cond_grp");
-    this.cond_grp_btn = "AND";
+    this.cond_grp_btn = "";
+    this.cond_grp_coll_btn = "";
     //this.WhereConditionObj = {
     //    ConditionGroups: [{
     //        id: 1, cg: { Conditions: [{ CName: "", Operator: "", Value: "" }, { CName: "", Operator: "", Value: "" }], operator: "+" }, { id: 2, con }, { id: 1, con }, { id: 1, con },],
@@ -50,13 +51,14 @@
         }.bind(this)
     };
 
-    this.makeDroppable = function () {
+    this.makeDroppable = function ()
+    {
         $(".dragables").draggable({
             revert: "invalid",
             helper: "clone",
             appendTo: "body",
-           
         });
+
         this.ConditionPane.droppable({
             accept: ".dragables",
             drop: this.onwhereDropFn.bind(this)
@@ -72,33 +74,34 @@
 
         if (this.dropObj.hasClass("droped")) //conditions drag from one box,then droped into another box
         {
-            $(event.target).append($(ui.draggable).detach().css({ 'top': '0px', 'left': ' 0px' }));
+            $(event.target).append($(ui.draggable).detach().css({ 'top': '0px', 'left': ' 90px' }));
             this.dropobj_id = this.dropObj.attr("id");
-
-            for (var i = 0; i < this.WHEREcond.ConditionGroupColl.length; i++) //condition removed from previous box
+            this.count = this.WHEREcond.ConditionGroupColl.length;
+            for (var i = 0; i < this.count; i++) //condition removed from previous box
             {
                 for (var j = 0; j < this.WHEREcond.ConditionGroupColl[i].ConditionColl.length; j++)
                 {
-                    if (this.dropobj_id == this.WHEREcond.ConditionGroupColl[i].ConditionColl[j]['id'])
-                    {
+                   if (this.dropobj_id == this.WHEREcond.ConditionGroupColl[i].ConditionColl[j]['id'])
+                   {
                         this.add_cond = this.WHEREcond.ConditionGroupColl[i].ConditionColl[j];
-                        //this.WHEREcond.ConditionGroupColl[i].ConditionColl[j].pop();
-                    }
+                        var index = this.WHEREcond.ConditionGroupColl[i].ConditionColl.indexOf(this.add_cond);
+                        this.WHEREcond.ConditionGroupColl[i].ConditionColl.splice(index,1);
+                   }
                 }
             }
 
             for (var i = 0; i < this.WHEREcond.ConditionGroupColl.length; i++) //condition added into a new box
             {
-                for (var j = 0; j < this.WHEREcond.ConditionGroupColl[i].ConditionColl.length; j++)
-                {
-                    if (this.dropobj_id != this.WHEREcond.ConditionGroupColl[i].ConditionColl[j]['id'])
-                    {
+               // for (var j = 0; j < this.WHEREcond.ConditionGroupColl[i].ConditionColl.length; j++)
+                //{
+                  // if (this.dropobj_id != this.WHEREcond.ConditionGroupColl[i].ConditionColl[j]['id'])
+                   //{
                         if (this.droploc_id == this.WHEREcond.ConditionGroupColl[i]['id'])
                         {
                             this.WHEREcond.ConditionGroupColl[i].ConditionColl.push(this.add_cond);
                         }
-                    }
-                    }
+                    //}
+                //}
             }
 
         }
@@ -121,22 +124,24 @@
                 }
             }.bind(this));
         }
+        
     };
 
     this.onConNGrp = function ()
     {
         this.droploc.append(`<div class="where_cond_grp" id="${this.objId}" style="left:200px; top:100px;position:relative">
         <form><div class="cond_grp_header">
-                <div class="btn-group anbtn">
-                <button type="button" class="btn btn-primary">AND</button>
-                <button type="button" class="btn btn-primary">OR</button>
+                <div class="btn-group grp">
+                <button type="button" class="btn btn-primary intern_btn">AND</button>
+                <button type="button" class="btn btn-primary intern_btn">OR</button>
                 </div>
-                <div class="btn-group pull-right rule-actions"><button type="button" class="btn btn-xs btn-danger delbtn" ><i class="glyphicon glyphicon-remove"></i> Delete</button></div>
+                <div class="btn-group pull-right rule-actions" ><button type="button" class="btn btn-xs btn-danger delbtn" onclick="$('#${this.objId}').remove()"><i class="glyphicon glyphicon-remove"></i> Delete</button></div>
             </div><br>
-            <div class="droped row " id="${this.condId}">
-                <div class="col-sm-3 frst">${this.columnName}</div>
+            <div class="droped row " id="${this.condId}"  style="left:90px">
+                <div class="col-sm-2 frst">${this.columnName}</div>
                 <div class="col-sm-3 sec"><select class="form-control" id="select_id" ></select></div>
-                <div class="col-sm-6 third"><input type="text" class="form-control" id="myText"></div>
+                <div class="col-sm-5 third"><input type="text" class="form-control" id="myText"></div>
+                <div class="col-sm-2 fourth btn-group pull-right rule-actions" ><button type="button" class="btn btn-xs btn-danger" onclick="$('#${this.condId}').remove()"><i class="glyphicon glyphicon-remove"></i> Delete</button></div>
             </div>
        </form></div><br>`);
 
@@ -144,7 +149,7 @@
 
         $("#" + this.objId).droppable({ accept: ".dragables,.droped", drop: this.onwhereDropFn.bind(this) });
 
-        $(`#${this.objId} .btn`).click(function () //box button
+        $(`#${this.objId} .intern_btn`).click(function () //box button
         {
             this.cond_grp_btn = $(this).text();
         });
@@ -161,13 +166,15 @@
 
         cg.ConditionColl.push(cond);
         this.WHEREcond.ConditionGroupColl.push(cg); // push box into box collection
+        
     }
-    this.oncond = function ()
+    this.oncond = function () 
     {
-        this.droploc.append(`<form><div class="droped row " id="${this.condId}">
-                <div class="col-sm-3 frst">${this.columnName}</div>
+        this.droploc.append(`<form><div class="droped row " id="${this.condId}" style="left:90px">
+                <div class="col-sm-2 frst">${this.columnName}</div>
                 <div class="col-sm-3 sec"><select class="form-control" id="select_id" ></select></div>
-                <div class="col-sm-6 third"><input type="text" class="form-control" id="myText"></div>
+                <div class="col-sm-5 third"><input type="text" class="form-control" id="myText"></div>
+                <div class="col-sm-2 fourth btn-group pull-right rule-actions" ><button type="button" class="btn btn-xs btn-danger" onclick="$('#${this.condId}').remove()"><i class="glyphicon glyphicon-remove"></i> Delete</button></div>
             </div></form>`);
         this.datatype_check(this.condId);
         var cond = new this.Condition(); //new condition created
@@ -220,11 +227,19 @@
             $(".sortorder").disableSelection();
         });
     };
-
-
+    this.externBtn = function ()
+    {
+        if (this.WHEREcond.ConditionGroupColl.length > 1) {
+            $(`#${this.objId} .extern_btn`).click(function () //boxcollection button(extern)
+            {
+                this.cond_grp_coll_btn = $(this).text();
+            });
+            this.WHEREcond.Operator = this.cond_grp_coll_btn;
+        }
+    }
     this.init = function () {
         this.makeDroppable();
-
+       
     };
     this.init()
 };
