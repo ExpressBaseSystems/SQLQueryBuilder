@@ -19,7 +19,7 @@
     this.appendTableNames = function ()
     {
         for (var key in this.TableSchema) {
-            $("#tables-cont").append(`<ul class="treeview"><li class="dragable t-draggable" tname="${key}">${key}   
+            $("#tables-cont").append(`<ul id="dragula" class="treeview"><li class="dragable t-draggable" tname="${key}">${key}   
             </li></ul>`);
         }
     };

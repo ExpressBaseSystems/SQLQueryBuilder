@@ -175,11 +175,11 @@ div.treeview ul:first-child:before {
     overflow-x: hidden;
 }
 
-.btn {
+/*.btn {
     height: 32px;
     border-radius: 5px;
     width: 60px;
-  }
+  }*/
 .rule-actions {
     padding-top: 4px;
     padding-right: 10px;
@@ -188,21 +188,7 @@ div.treeview ul:first-child:before {
     padding-top: 4px;
     padding-left: 10px;
 }
-.frst {
-    padding-top: 10px;
-    text-align: center;
-   
-    font-family:sans-serif;
-}
-.sec {
-    padding-top: 6px;
-}
-.third {
-    padding-top: 6px;
-}
-.fourth {
-    padding-top: 12px;
-}
+
 /*sorting..........................................................*/
 .sortorder {
     border: 5px solid #DDD;
@@ -235,16 +221,6 @@ div.treeview ul:first-child:before {
     text-align:center;
     color:white;
 }
-/*where condition new................................*/
-
-
-.btn {
-    height: 22px ;
-   
-}
-
-
-
 /*latest*/
 
 .condition-tab {
@@ -282,7 +258,8 @@ div.treeview ul:first-child:before {
     border-radius: 10px;
     min-height: 50px;
     margin-bottom: 10px;
-    margin-left:1px;
+    margin-left: 1px;
+    padding: 10px;
 }
 
 .where-btns {
@@ -297,4 +274,8 @@ div.treeview ul:first-child:before {
     padding-top: 5px;
     padding-left: 10px;
     position: absolute;
+}
+
+.d-inline{
+    display:inline-block;
 }
