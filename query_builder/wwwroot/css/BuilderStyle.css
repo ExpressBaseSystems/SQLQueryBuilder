@@ -59,11 +59,23 @@
     background: #21527d none repeat scroll 0% 0%;
     color: #fff;
 }
+
+
+
+.tab-pane {
+    padding: 15px 0;
+}
+
+.tab-content {
+    padding: 20px
+}
+
 .card {
     background: #FFF none repeat scroll 0% 0%;
     box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3);
     margin-bottom: 30px;
 }
+
 /*drag function(main query builder) table................................*/
 .Table {
     display: inline-block;
@@ -74,6 +86,12 @@
 #tbhd {
     text-align: center;
     border-bottom: 1px solid black;
+}
+
+.col > .fa fa-sort {
+    background-size: 10px 10px;
+    background-repeat: no-repeat;
+    background-position: right;
 }
 /*tree display..........................*/
 div.treeview {
@@ -190,6 +208,12 @@ div.treeview ul:first-child:before {
 }
 
 /*sorting..........................................................*/
+.sortfunction {
+    height: auto;
+    border: 5px solid BLUE;
+    float: right;
+}
+
 .sortorder {
     border: 5px solid #DDD;
     height: inherit;
@@ -278,4 +302,35 @@ div.treeview ul:first-child:before {
 
 .d-inline{
     display:inline-block;
+}
+.CodeMirror-sizer {
+    margin-left: 28px;
+    min-width: 23px;
+    margin-bottom: -17px;
+    border-right-width: 13px;
+    min-height: 28px;
+    padding-right: 30px;
+    padding-left: 70px;
+    padding-bottom: 0px;
+}
+
+.CodeMirror-cursors {
+    visibility: hidden;
+    position: relative;
+    z-index: 3;
+    left: -20px;
+}
+
+.adad {
+    margin-right: 1px;
+    position: absolute;
+    right: 0;
+}
+.btn1 {
+    padding: initial;
+    margin-right: 30px;
+    margin-top: 1px;
+    position: absolute;
+   
+    right: 0;
 }

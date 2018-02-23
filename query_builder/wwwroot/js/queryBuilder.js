@@ -60,11 +60,12 @@
                 forcnm="${this.item.foreign_cnm}" ><span><input type="checkbox" id="mycheck" /></span>
                 <span id="ann">${this.item.cname}</span><span>${this.item.type}</span><span class="icon"></span></div>`);
                 this.subtreeappend(); 
-                 
+                
         }
         $('input[type="checkbox"]').on("click", this.get_parent.bind(this));
         $(".col").on("focus", this.builderContextmenu.bind(this));
         this.treeFunction();
+       
     };
     this.subtreeappend = function ()
     {
@@ -74,8 +75,9 @@
             this.drawTree = true;
             
         }
-        this.whereConObject.makeDroppable(); //call where_query_builder.js
-        this.aggregateObject.makeDroppable(); //call aggregate_query_builder.js
+        this.whereConObject.makeDroppable();
+        //this.whereConObject.makeDroppable(); //call where_query_builder.js
+        //this.aggregateObject.makeDroppable(); //call aggregate_query_builder.js
     }
     this.treepusharray = function ()
     {
@@ -86,7 +88,8 @@
         this.dropObj.parent().addClass("tre");
         if (!this.dropObj.parent().hasClass("treeview-tree"))
         {
-            this.dropObj.append("<ul></ul>");
+            this.dropObj.append(`<ul id="abc"></ul>`);
+           
         }
     }
     this.treeFunction = function ()
@@ -204,35 +207,35 @@
     };
     this.init();
 }
-$.fn.extend({
-    treeview: function () {
-        return this.each(function () {
-            // Initialize the top levels;
-            var tree = $(this);
-            tree.addClass('treeview-tree');
-            tree.find('li').each(function () {
-                var stick = $(this);
-            });
-            tree.find('li').has("ul").each(function () {
-                var branch = $(this); //li with children ul
-                branch.prepend("<i class='tree-indicator glyphicon glyphicon-chevron-right'></i>");
-                branch.addClass('tree-branch');
-                branch.on('click', function (e) {
-                    if (this == e.target) {
-                        var icon = $(this).children('i:first');
-                        icon.toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
-                        $(this).children().children().toggle();
-                    }
-                })
-                branch.children().children().toggle();
-                branch.children('.tree-indicator, button, a').click(function (e) {
-                    branch.click();
-                    e.preventDefault();
-                });
-            });
-        });
-    }
-});
+//$.fn.extend({
+//    treeview: function () {
+//        return this.each(function () {
+//            // Initialize the top levels;
+//            var tree = $(this);
+//            tree.addClass('treeview-tree');
+//            tree.find('li').each(function () {
+//                var stick = $(this);
+//            });
+//            tree.find('li').has("ul").each(function () {
+//                var branch = $(this); //li with children ul
+//                branch.prepend("<i class='tree-indicator glyphicon glyphicon-chevron-right'></i>");
+//                branch.addClass('tree-branch');
+//                branch.on('click', function (e) {
+//                    if (this == e.target) {
+//                        var icon = $(this).children('i:first');
+//                        icon.toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
+//                        $(this).children().children().toggle();
+//                    }
+//                })
+//                branch.children().children().toggle();
+//                branch.children('.tree-indicator, button, a').click(function (e) {
+//                    branch.click();
+//                    e.preventDefault();
+//                });
+//            });
+//        });
+//    }
+//});
      //$(".dragable").draggable({
         //    revert: "invalid",
         //    tolerance : "fit",

@@ -154,6 +154,11 @@ namespace query_builder.Controllers
             
             return null;
         }
+
+        public IActionResult sample()
+        {
+            return View();
+        }
     }
 }
 

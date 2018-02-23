@@ -48,12 +48,6 @@ var SqlWhereClause = function ()
 
     this.init = function ()
     {
-        var drake = dragula([document.getElementById(".treeview"), document.getElementById("")])
-            .on('drag', function (el) {
-                el.className = el.className.replace('ex-moved', '');
-            }).on('drop', function (el) {
-                el.className += ' ex-moved';
-            });
         this.makeDroppable();
         $(".conditiong-gp-container .addGroup").off("click").on("click", this.addGroupCondition.bind(this));
         //$("#group0").off("click").on("click", this.groupButtonClick.bind(this));
