@@ -253,7 +253,7 @@ var QueryBuilder = function (object) {
         var objid = "groupCondition" + this.groupCounter++;
         this.bodyid = "groupBody" + this.groupCounter++;
 
-        appendloc.append(`<div class="cond-grp2"  id= "${objid}" >
+        appendloc.append(`<div class="groupBox"  id= "${objid}" >
                             <div class=" conditiong-gp-container-header form-inline">
                                 <div class="btn-group btn-toggle where-toggle">
                                     <button class="btn btn-sm btn-default grpAndOrBtn" value="AND">AND</button>

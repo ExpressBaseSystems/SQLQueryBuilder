@@ -3,6 +3,7 @@
 .pd-0 {
     padding: 0;
 }
+
 .builder-window {
     height: 100vh;
 }
@@ -24,22 +25,22 @@
     border-bottom: 2px solid #DDD;
 }
 
-.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+    .nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
         border-width: 0;
     }
 
- .nav-tabs > li > a {
+    .nav-tabs > li > a {
         border: none;
         color: #666;
     }
 
-.nav-tabs > li.active > a, .nav-tabs > li > a:hover {
+        .nav-tabs > li.active > a, .nav-tabs > li > a:hover {
             border: none;
             color: #4285F4 !important;
             background: transparent;
         }
 
-.nav-tabs > li > a::after {
+        .nav-tabs > li > a::after {
             content: "";
             background: #4285F4;
             height: 2px;
@@ -51,7 +52,7 @@
             transform: scale(0);
         }
 
-.nav-tabs > li.active > a::after, .nav-tabs > li:hover > a::after {
+    .nav-tabs > li.active > a::after, .nav-tabs > li:hover > a::after {
         transform: scale(1);
     }
 
@@ -78,8 +79,9 @@
     display: inline-block;
     margin: auto;
     border: 1px solid black;
-    padding:5px;
+    padding: 5px;
 }
+
 #tbhd {
     text-align: center;
     border-bottom: 1px solid black;
@@ -103,7 +105,7 @@ div.treeview {
     border-radius: 4px;
 }
 
-div.treeview ul:first-child:before {
+    div.treeview ul:first-child:before {
         display: none;
     }
 
@@ -114,16 +116,16 @@ div.treeview ul:first-child:before {
     color: #369;
 }
 
-.treeview ul {
+    .treeview ul {
         margin-left: 1em;
         position: relative
-}
+    }
 
- .treeview ul ul {
+        .treeview ul ul {
             margin-left: .5em
-}
+        }
 
-.treeview ul:before {
+        .treeview ul:before {
             content: "";
             display: block;
             width: 0;
@@ -132,17 +134,17 @@ div.treeview ul:first-child:before {
             left: 0;
             border-left: 1px solid;
             bottom: 15px;
-}
+        }
 
-.treeview li {
+    .treeview li {
         margin: 0;
         padding: 0 1em;
         line-height: 2em;
         font-weight: 700;
         position: relative
-}
+    }
 
-.treeview ul li:before {
+    .treeview ul li:before {
         content: "";
         display: block;
         width: 10px;
@@ -152,8 +154,7 @@ div.treeview ul:first-child:before {
         position: absolute;
         top: 1em;
         left: 0
-
-}
+    }
 
 .tree-indicator {
     margin-right: 5px;
@@ -176,55 +177,52 @@ div.treeview ul:first-child:before {
     outline: 0;
 }
 
-.dragables{
-    font-size:small;
+/*whereClause...............................................*/
+
+.dragables {
+    font-size: small;
 }
 
-.where_cond_grp {
-    border-radius: 20px;
-    border: 2px solid blue;
-    height: 200px;
-    width: 700px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
 .rule-actions {
     padding-top: 4px;
     padding-right: 10px;
 }
-.grp{
+
+.grp {
     padding-top: 4px;
     padding-left: 10px;
 }
+
 .condition-tab {
     padding: 35px;
-   
 }
+
 .conditiong-gp-container {
     width: 100%;
     border: 1px solid yellow;
     border-radius: 10px;
     padding: 15px;
 }
-.conditiong-gp-container-header{
-    width:100%;
-    min-height:50px;
-}
-.conditiong-gp-container-body{
-    width:100%;
-    padding:10px 20px 20px 60px;
-    min-height:50px;
-    
+
+.conditiong-gp-container-header {
+    width: 100%;
+    min-height: 50px;
 }
 
-.cond-grp2 {
+.conditiong-gp-container-body {
+    width: 100%;
+    padding: 10px 20px 20px 60px;
+    min-height: 50px;
+}
+
+.groupBox {
     width: 100%;
     border: 1px solid yellow;
     border-radius: 10px;
     min-height: 50px;
     margin-bottom: 10px;
-    
 }
+
 .droped {
     width: 100%;
     border: 1px solid yellow;
@@ -238,17 +236,15 @@ div.treeview ul:first-child:before {
 .where-btns {
     padding-top: 5px;
     padding-right: 5px;
-    float:right;
+    float: right;
 }
+
 .where-toggle {
     padding-top: 5px;
     padding-left: 10px;
     position: absolute;
 }
 
-.d-inline{
-    display:inline-block;
+.d-inline {
+    display: inline-block;
 }
-
-
-
