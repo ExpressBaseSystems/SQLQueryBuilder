@@ -11,33 +11,16 @@
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.3/jquery.contextMenu.js"></script>
-@*<script src="~/js/queryBuilder.js" type="text/javascript"></script>*@
-<script src="~/js/mainQueryBuilder.js" type="text/javascript"></script>
-<script src="~/js/latestWhereClause.js" type="text/javascript"></script>
-@*<script src="~/js/secondqueryBuilder.js" type="text/javascript"></script>*@
-@*<script src="~/js/aggregateQB.js" type="text/javascript"></script>*@
-@*<script src="~/js/whereClause.js" type="text/javascript"></script>*@
 
-<link rel="stylesheet" href="~/lib/codemirror-5.33.0/lib/codemirror.css">
-<link rel="stylesheet" href="~/lib/codemirror-5.33.0/addon/hint/show-hint.css">
-<link rel="stylesheet" href="~/lib/codemirror-5.33.0/addon/fold/foldgutter.css" />
-<script src="~/lib/codemirror-5.33.0/lib/codemirror.js"></script>
-<script src="~/lib/codemirror-5.33.0/addon/hint/show-hint.js"></script>
-<script src="~/lib/codemirror-5.33.0/addon/hint/javascript-hint.js"></script>
-<script src="~/lib/codemirror-5.33.0/mode/javascript/javascript.js"></script>
-<script src="~/lib/codemirror-5.33.0/addon/hint/sql-hint.js"></script>
-<script src="~/lib/codemirror-5.33.0/mode/sql/sql.js"></script>
-<script src="~/lib/codemirror-5.33.0/addon/fold/foldcode.js"></script>
-<script src="~/lib/codemirror-5.33.0/addon/fold/foldgutter.js"></script>
-<script src="~/lib/codemirror-5.33.0/addon/fold/brace-fold.js"></script>
-<script src="~/lib/codemirror-5.33.0/addon/fold/xml-fold.js"></script>
-<script src="~/lib/codemirror-5.33.0/addon/fold/comment-fold.js"></script>
-<script src="~/lib/codemirror-5.33.0/mode/xml/xml.js"></script>
+<script src="~/js/whereClause.js" type="text/javascript"></script>
+
+
 <script>
     var databaseObject = @Html.Raw(ViewBag.dict);
     console.log(databaseObject);
 </script>
 <body>
+
     <div class="container-fluid builder-window">
         <div class="row builder-window-row">
             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 Builder-toolbox">
@@ -58,20 +41,22 @@
                 <div class="tab-content">
                     <div class="tab-pane active" id="Design"><div class="DesignPane drop" id="designpane" style="height:700px;width:100%"></div></div>
                     <div class="tab-pane condition-tab" id="Condition">
-                        <div class="conditiong-gp-container">
-                            <div class="ConditionPanes-header conditiong-gp-container-header form-inline">
-                                <div class="btn-group btn-toggle where-toggle">
-                                    <button class="btn btn-sm btn-default">AND</button>
-                                    <button class="btn btn-sm btn-primary active">OR</button>
+                            <div class="conditiong-gp-container">
+                                <div class="ConditionPanes-header conditiong-gp-container-header form-inline">
+                                    <div class="btn-group btn-toggle where-toggle">
+                                        <button class="btn btn-sm btn-default grpAndOrBtn" value="AND">AND</button>
+                                        <button class="btn btn-sm btn-default grpAndOrBtn active" value="OR">OR</button>
+                                    </div>
+                                    <div class="pull-right" id="saveError"></div>
+                                    <div class="btn-group where-btns pull-right rule-actions">
+                                        <button type="button" data-counter="0" class="btn btn-xs btn-success where-btn2 addGroup" id="group0"><i class="glyphicon glyphicon-plus-sign"></i>Group</button>
+                                        <button type="button" class="btn btn-xs btn-success saveQuery">SAVE</button>
+                                    </div>
                                 </div>
-                                <div class="btn-group where-btns pull-right rule-actions">
-                                    <button type="button" data-counter="0" class="btn btn-xs btn-success where-btn2 addGroup" id="group0"><i class="glyphicon glyphicon-plus-sign"></i>Group</button>
-                                </div>
-                            </div>
-                            <div class="conditiong-gp-container-body" id="firstBody">
+                                <div class="conditiong-gp-container-body" id="firstBody">
 
+                                </div>
                             </div>
-                        </div>
                     </div>
                     <div class="tab-pane" id="Aggregate">
                         <div class="AggregatePane" style="height:700px;width:100%">
@@ -87,6 +72,7 @@
             </div>
         </div>
     </div>
+       
 </body>
 <script>
     var builder = new QueryBuilder(databaseObject);

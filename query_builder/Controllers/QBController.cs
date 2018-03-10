@@ -126,39 +126,35 @@ namespace query_builder.Controllers
             return View();
         }
         [HttpPost]
-        public string xxxx()
+        public string selectClause(string data)
         {
-            var req = this.HttpContext.Request.Form;
-            
-            var val1 = req["text"];
-            var val2 = req["col"];
-            var val3 = req["operator"];
-            var val4 = req["int_andor"];
-            ConditionGroup cg = new ConditionGroup();
-            cg.Add(new Condition { ColumnName = val2, Operator = val3, Value = val1 });
-            //cg.Add(new Condition { ColumnName = "rajz", Operator = "=" });
-            //cg.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
-            cg.InternalAndOrOr = val4;
-            //cg.ExternalAndOrOr = "AND";
-
-            ConditionGroup cg1 = new ConditionGroup();
-            //cg1.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
-            //cg1.Add(new Condition { ColumnName = "rajz", Operator = "=" });
-            //cg1.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
-            //cg1.InternalAndOrOr = "OR";
-
-            WhereCollection where = new WhereCollection();
-            where.Add(cg);
-          //  where.Add(cg1);
-            var x = where.GetWhereCondition();
-            
+            data = Base64Encode(data);
+            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
+            {
+                DataTable dt = new DataTable();
+                con.Open();
+                string sql = "INSERT INTO save VALUES ('@val')".Replace("@val", data);
+                NpgsqlCommand cmd = new NpgsqlCommand(sql, con);
+                 var i =cmd.ExecuteNonQuery();
+            }
             return null;
+        }
+        public string Base64Encode(string data)//encode
+        {
+            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(data);
+            return System.Convert.ToBase64String(plainTextBytes);
+        }
+
+        public static string Base64Decode(string base64EncodedData)//decode
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
         public IActionResult sample()
         {
             return View();
-        }
+        } 
     }
 }
 
