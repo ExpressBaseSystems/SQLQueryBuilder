@@ -10,7 +10,8 @@ var QueryBuilder = function (object) {
     this.bodyid = {};
     this.IdCounters = {
         TableCount: 0
-    };
+    }; 
+
     this.count = 0;
     this.columnName = [];
     this.drawTree = false;
