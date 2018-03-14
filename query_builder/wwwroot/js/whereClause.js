@@ -1,8 +1,7 @@
 ﻿var counter = 0;
-var QueryBuilder = function (object) {
+var WhereBuilder = function () {
     this.tbName = [];
     this.dragableArray = [];
-    this.TableSchema = object;
     this.DesignPane = $(".DesignPane");
     this.SortPane = $(".SortPane");
     this.ConditionPane = $(".ConditionPane");
@@ -10,12 +9,12 @@ var QueryBuilder = function (object) {
     this.bodyid = {};
     this.IdCounters = {
         TableCount: 0
-    }; 
-
+    };
+    this.saveFormatString = "";
     this.count = 0;
     this.columnName = [];
     this.drawTree = false;
-    this.drake = {};
+    this.drake = null;
     this.date = ["=", "!="];
     this.integer = ["=", ">", "<=", ">=", "<", "!=", "BETWEEN"];
     this.real = ["=", ">", "<=", ">=", "<", "!="];
@@ -41,6 +40,7 @@ var QueryBuilder = function (object) {
 
     this.Condition = function () {  //Constructor
         this.id = null;
+        this.condTabName = "";
         this.CName = "";
         this.Operator = "";
         this.Value = "";
@@ -48,69 +48,34 @@ var QueryBuilder = function (object) {
 
     this.WHEREclouseQ = new this.ConditionGroup();
 
-    this.appendTableNames = function () {
-        for (var key in this.TableSchema) {
-            $("#tables-cont").append(`<ul class="treeview" tree_ul="treeview_${key}" tname="${key}">
-                                            <li class="t-draggable" id="tname_${key}" tname="${key}">${key}   
-                                                <ul id="treeview_${key}" class="cols-cont" style="display:none;">
-                                                </ul>
-                                            </li>
-                                      </ul>`);
-            this.appendTCol($("#tname_" + key), this.TableSchema[key]);
-        }
-
-    };
-
-    this.appendTCol = function ($container, colArray) {
-        for (i = 0; i < colArray.length; i++) {
-            $container.children("ul").append(`<li class="col-draggable" colname="${colArray[i].cname}"  datatype="${colArray[i].type}">${colArray[i].cname}</li>`);
-
-        }
-    };
-
-    this.makeDroppable = function () {
-        this.drake = new dragula([document.getElementById("tables-cont"), document.getElementById("designpane"), document.getElementById("firstBody")], {
+    this.makeDroppable = function ($storeTableNames)
+    {
+        this.storedNames = $storeTableNames;
+        if (this.drake === null)
+        {
+        this.drake = new dragula([document.getElementById("firstBody")], {
             copy: function (el, source) {
-                return (el.className === 'treeview' || el.className === 'col-draggable');
+                return (el.className === 'col-draggable');
             },
-            moves: this.movesFn.bind(this),
             accepts: this.acceptFn.bind(this)
-        });
-        //this.drake.copy = true;
-        this.drake.on("drop", this.tableOnDrop.bind(this));
-        this.drake.on("drag", this.tableOnDrag.bind(this))
-    };
+            });
 
-    this.movesFn = function (el, source, handle, sibling) {
-        return true;
+        this.drake.on("drop", this.tableOnDrop.bind(this));
+        this.drake.on("drag", this.tableOnDrag.bind(this));
+        }
+        for (var key in this.storedNames) {
+            var tblName = this.storedNames[key];
+            this.drake.containers.push(document.getElementById("treeview_" + tblName));
+        }
     };
 
     this.acceptFn = function (el, target, source, sibling) {
-        if ($(source).attr("id") === "tables-cont" && $(target).attr("id") === "tables-cont") {
+
+       
+        if ($(target).attr("class") === "cols-cont")
             return false;
-        }
-        else if ($(source).attr("id") === "tables-cont" && $(target).attr("id") === "firstBody") {
-            return false;
-        }
-        else if ($(source).attr("id") === "tables-cont" && $(target).attr("id") === this.bodyid) {
-            return false;
-        }
-        else if ($(source).attr("id") === "treeview_" + this.subtreeName && $(target).attr("id") == "designpane") {
-            return false;
-        }
-        else if ($(source).attr("id") === "treeview_" + this.subtreeName && $(target).attr("id") == "tables-cont") {
-            return false;
-        }
-        else if ($(source).attr("id") === "designpane" && $(target).attr("id") == "treeview_" + this.subtreeName) {
-            return false;
-        }
-        else if ($(source).attr("id") === "designpane") {
-            this.drake.copy = false;
-            return true;
-        }
         else
             return true;
-        //return target !== document.getElementById("treeview_" + this.subtreeName)
     };
 
     this.tableOnDrag = function (el, source) {
@@ -120,31 +85,11 @@ var QueryBuilder = function (object) {
     this.tableOnDrop = function (el, target, source, sibling) {
         var targetId = $(target).attr("id");
         var sourceId = $(source).attr("id");
-        if (sourceId === "tables-cont" && targetId === "designpane") {
-            this.droploc = $(target);
-            this.dropObj = $(el).children("li");
-            var treeid = $(el).attr("tree_ul");
-            $(el).remove();
-            this.left = event.pageX - this.droploc.offset().left;
-            this.top = event.pageY - this.droploc.offset().top;
-            this.tableName = this.dropObj.attr('tname');
-            this.objId = this.tableName + this.IdCounters["TableCount"]++;
-            this.droploc.append(`<div id="${this.objId}"
-                             style="position:absolute;top:${this.top};left:${this.left};">
-                             <div class="Table">
-                             <div id="tbhd_${this.tableName}">${this.tableName}
-                             </div>
-                             <div id="col-container${this.objId}"></div></div>`);
-            this.addColoums("col-container" + this.objId);
-            $("#" + treeid).show();
-            if (this.drake.containers.indexOf(treeid) === -1)
-                this.drake.containers.push(document.getElementById(treeid));
-        }
-
-        else if (sourceId == "treeview_" + this.subtreeName) {
+        if (sourceId == "treeview_" + this.subtreeName) {
             this.droploc = $(target);
             this.droploc_id = $(target).attr("id");
             this.columnName = $(el).attr("colname");
+            this.onDropTabName = $(source).parent().attr("tname");
             this.datatype = $(el).attr("datatype");
             $(el).remove();
             this.condId = this.columnName + this.IdCounters["TableCount"]++;
@@ -165,9 +110,6 @@ var QueryBuilder = function (object) {
             this.popCollCondRec(this.WHEREclouseQ, sourceId, dropobj_id);
             this.pushCollCondRec(this.WHEREclouseQ, targetId, dropobj_id)
         }
-
-        //if (this.drake.containers.indexOf("firstBody") === -1)
-        //    this.drake.containers.push(document.getElementById("firstBody"));
     };
 
     this.popCollGrpRec = function (condGrp, source, dropObjid) {
@@ -224,23 +166,6 @@ var QueryBuilder = function (object) {
                     this.popCollCondRec(condGrp.ConditionGroup_Coll[k], source, dropObjid)
             }
         }
-    };
-
-    this.addColoums = function ($container) {
-        for (i = 0; i < this.TableSchema[this.tableName].length; i++) {
-            this.item = this.TableSchema[this.tableName][i];
-            $("#" + $container).append(`<div class="col"  tabindex="1" id="${this.tableName}-col${i}" cnm="${this.item.cname}" 
-                datatp="${this.item.type}" con="${this.item.constraints}" fortnm="${this.item.foreign_tnm}" 
-                forcnm="${this.item.foreign_cnm}" ><span><input type="checkbox" id="mycheck" /></span>
-                <span id="ann">${this.item.cname}</span><span>${this.item.type}</span><span class="icon"></span></div>`);
-        }
-    };
-
-    this.treedFunc = function (e) {
-        if ($(e.target).css("display") === "block")
-            $(e.target).children().hide();
-        else
-            $(e.target).children().show();
     };
 
     this.addGroupCondition = function (e) {
@@ -351,6 +276,7 @@ var QueryBuilder = function (object) {
         this.datatype_check(this.condId);
         this.cond = new this.Condition(); //new condition created
         this.cond.id = this.condId;
+        this.cond.condTabName = this.onDropTabName;
         this.cond.CName = this.columnName;
         this.cond.Operator = $("#select_id option:selected").text();
         this.condFlatObj[this.condId] = this.cond;
@@ -556,14 +482,14 @@ var QueryBuilder = function (object) {
         else if (condDataType == "date") {
             for (var key in this.condFlatObj) {
                 if (condObjId === key) {
-                    this.condFlatObj[key].Value = con;
+                    this.condFlatObj[key].Value = "'" + con +"'";
                 }
             }
         }
         else if (condDataType == "time") {
             for (var key in this.condFlatObj) {
                 if (condObjId === key) {
-                    this.condFlatObj[key].Value = con;
+                    this.condFlatObj[key].Value = "'" + con + "'";
                 }
             }
         }
@@ -588,22 +514,6 @@ var QueryBuilder = function (object) {
         $("#" + $el.parent().attr("id")).remove();
         this.popCollCondRec(this.WHEREclouseQ, source, dropObjid);
     };
-
-    this.finalQueryFn = function (event) {
-        $(".keypressEventText").each(function (i, ob) {
-            if ($(ob).val().trim() === "")
-                $("#saveError").html("please fill out fields").show().fadeOut("slow");
-        });
-        $(".changeEventTextFn").each(function (i, ob) {
-            if ($(ob).val().trim() === "")
-                $("#saveError").html("please fill out fields").show().fadeOut("slow");
-        });
-        var finalString = this.recFinalQueryFn(this.WHEREclouseQ);
-        var saveFormatString = finalString.substr(1);
-        this.callAjax(saveFormatString);
-        //var myJSON = JSON.stringify(finalString);
-    };
-
     this.createQueryForCondGroup = function (condGrp) {
         if (condGrp.Condition_Coll.length > 0) {
             var queryString = "((" + condGrp.Condition_Coll[0]["CName"] + " " + condGrp.Condition_Coll[0]["Operator"] + " " + condGrp.Condition_Coll[0]["Value"] + ") ";
@@ -625,24 +535,17 @@ var QueryBuilder = function (object) {
         }
         return fString;
     };
-
-    this.callAjax = function (ob) {
-        $.ajax({
-            type: 'POST',
-            url: "../QB/selectClause",
-            data: { data: ob },
-            success: function (data) {
-
-            }
-        })
+    this.designPaneFn = function () {
+        $(".treeviewDragula").hide();
+        $("#tables-cont").show();
     };
 
     this.init = function () {
-        this.appendTableNames();
         this.makeDroppable();
         $(".conditiong-gp-container .addGroup").off("click").on("click", this.addGroupCondition.bind(this));
         this.WHEREclouseQ.id = "firstBody";    //add id into box
         this.WHEREclouseQ.operator = "OR";
+        //this.queryDisplayObj = new QueryBuilder();
         $("body").on("click", ".conditionRemove", this.condRemoveFn.bind(this));
         $("body").on("click", ".groupRemove", this.grpRemoveFn.bind(this));
         $("body").on("click", ".conditionCheck", this.condCheckFn.bind(this));
@@ -651,7 +554,7 @@ var QueryBuilder = function (object) {
         $("body").on("keypress", ".keypressEventText", this.keypressEventTextFn.bind(this));
         $("body").on("change", ".changeEventTextFn", this.changeEventTextFn.bind(this));
         $("body").on("change", ".selectOptr", this.condSelectOptrFn.bind(this));
-        $("body").on("click", ".saveQuery", this.finalQueryFn.bind(this));
+        $("a[href='#Design']").on("click", this.designPaneFn.bind(this));
     };
 
     this.init();

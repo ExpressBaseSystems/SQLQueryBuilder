@@ -6,13 +6,36 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.css" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.3/jquery.contextMenu.css" rel="stylesheet" />
 <link href="~/css/whereClause.css" rel="stylesheet" type="text/css" />
+<link href="~/css/Home.css" rel="stylesheet" type="text/css" />
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js" type="text/javascript"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js'></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-contextmenu/2.6.3/jquery.contextMenu.js"></script>
+<script src="~/js/Home.js" type="text/javascript"></script>
 <script src="~/js/whereClause.js" type="text/javascript"></script>
+<script src="~/js/Sort.js" type="text/javascript"></script>
+@*<script src="~/js/connectingLine.js" type="text/javascript"></script>
+<script src="~/js/connectSVG.js" type="text/javascript"></script>
+<script src="~/js/jquerySVGmin.js" type="text/javascript"></script>*@
+<script src="~/js/QueryDisplay.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="~/lib/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="~/lib/codemirror/addon/hint/show-hint.css">
+<link rel="stylesheet" href="~/lib/codemirror/addon/fold/foldgutter.css" />
+<script src="~/lib/codemirror/lib/codemirror.js"></script>
+<script src="~/lib/codemirror/addon/hint/show-hint.js"></script>
+<script src="~/lib/codemirror/addon/hint/javascript-hint.js"></script>
+<script src="~/lib/codemirror/mode/javascript/javascript.js"></script>
+<script src="~/lib/codemirror/addon/hint/sql-hint.js"></script>
+<script src="~/lib/codemirror/mode/sql/sql.js"></script>
+<script src="~/lib/codemirror/addon/fold/foldcode.js"></script>
+<script src="~/lib/codemirror/addon/fold/foldgutter.js"></script>
+<script src="~/lib/codemirror/addon/fold/brace-fold.js"></script>
+<script src="~/lib/codemirror/addon/fold/xml-fold.js"></script>
+<script src="~/lib/codemirror/addon/fold/comment-fold.js"></script>
+<script src="~/lib/codemirror/mode/xml/xml.js"></script>
 
 <script>
     var databaseObject = @Html.Raw(ViewBag.dict);
@@ -27,39 +50,40 @@
                 <br />
                 <div id="tables-cont"></div>
                 <ul id="column-cont"></ul>
+                <div id="dragula-tables-cont"></div>
+                <ul id="dragula-column-cont"></ul>
             </div>
             <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 Builder-work-pane pd-0">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="active"><a href="#Design" aria-controls="home" role="tab" data-toggle="tab">Design</a></li>
                     <li><a href="#Condition" aria-controls="Condition" role="tab" data-toggle="tab">Condition</a></li>
-                    <li><a href="#Aggregate" aria-controls="Aggregate" role="tab" data-toggle="tab">Aggregate</a></li>
                     <li><a href="#Query" aria-controls="Query" role="tab" data-toggle="tab">Query</a></li>
                 </ul>
                 <!-- Tab panes -->
                 <div class="tab-content">
-                    <div class="tab-pane active" id="Design"><div class="DesignPane drop" id="designpane" style="height:700px;width:100%"></div></div>
-                    <div class="tab-pane condition-tab" id="Condition">
-                            <div class="conditiong-gp-container">
-                                <div class="ConditionPanes-header conditiong-gp-container-header form-inline">
-                                    <div class="btn-group btn-toggle where-toggle">
-                                        <button class="btn btn-sm btn-default grpAndOrBtn" value="AND">AND</button>
-                                        <button class="btn btn-sm btn-default grpAndOrBtn active" value="OR">OR</button>
-                                    </div>
-                                    <div class="pull-right" id="saveError"></div>
-                                    <div class="btn-group where-btns pull-right rule-actions">
-                                        <button type="button" data-counter="0" class="btn btn-xs btn-success where-btn2 addGroup" id="group0"><i class="glyphicon glyphicon-plus-sign"></i>Group</button>
-                                        <button type="button" class="btn btn-xs btn-success saveQuery">SAVE</button>
-                                    </div>
-                                </div>
-                                <div class="conditiong-gp-container-body" id="firstBody">
+                    <div class="tab-pane active De" id="Design">
+                        <div class="DesignPane drop" id="designpane" style="height:700px;width:100%">
 
+                        </div>
+                        <div class="col-sm-2 sortfunction sortfunction">
+
+                        </div>
+                    </div>
+                    <div class="tab-pane condition-tab" id="Condition">
+                        <div class="conditiong-gp-container">
+                            <div class="ConditionPanes-header conditiong-gp-container-header form-inline">
+                                <div class="btn-group btn-toggle where-toggle">
+                                    <button class="btn btn-sm btn-default grpAndOrBtn" value="AND">AND</button>
+                                    <button class="btn btn-sm btn-default grpAndOrBtn active" value="OR">OR</button>
+                                </div>
+                                <div class="pull-right" id="saveError"></div>
+                                <div class="btn-group where-btns pull-right rule-actions">
+                                    <button type="button" data-counter="0" class="btn btn-xs btn-success where-btn2 addGroup" id="group0"><i class="glyphicon glyphicon-plus-sign"></i>Group</button>
+                                    <button type="button" class="btn btn-xs btn-success saveQuery">SAVE</button>
                                 </div>
                             </div>
-                    </div>
-                    <div class="tab-pane" id="Aggregate">
-                        <div class="AggregatePane" style="height:700px;width:100%">
-                            <div class="agrt_group" style="left:100px; top:50px;position:relative">
-                                <div class="agrtHeader"><b>where_cond....</b></div><br />
+                            <div class="conditiong-gp-container-body" id="firstBody">
+
                             </div>
                         </div>
                     </div>
@@ -70,7 +94,7 @@
             </div>
         </div>
     </div>
-       
+
 </body>
 <script>
     var builder = new QueryBuilder(databaseObject);
@@ -78,7 +102,3 @@
 
 
 
-
-
-
-           

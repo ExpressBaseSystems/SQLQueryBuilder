@@ -113,11 +113,6 @@ namespace query_builder.Controllers
                     }
 
                 }
-                //List<Condition> userList = new List<Condition>();
-                //userList.Add(new Condition { ColumnName = "salary", Operator = "<", Value = "1000" });
-                //userList.Add(new Condition { ColumnName = "rajz", Operator = "="});
-                //userList.Add(new Condition { ColumnName = "salary", Operator = ">", Value = "4000" });
-                //Condition obj = (new JavascriptSerializer()).Deserialize<Condition>(objJson);
                 con.Close();
             }
             string json = JsonConvert.SerializeObject(vals, Formatting.Indented);
@@ -133,9 +128,34 @@ namespace query_builder.Controllers
             {
                 DataTable dt = new DataTable();
                 con.Open();
-                string sql = "INSERT INTO save VALUES ('@val')".Replace("@val", data);
+                string sql = string.Format("INSERT INTO save VALUES ('{0}')",data);
                 NpgsqlCommand cmd = new NpgsqlCommand(sql, con);
-                 var i =cmd.ExecuteNonQuery();
+                var i =cmd.ExecuteNonQuery();
+                con.Close();
+            }
+
+            return null;
+        }
+         [HttpGet]
+        public string selectClauseGet()
+        {
+            try
+            {
+                using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
+                {
+                    DataTable dt = new DataTable();
+                    con.Open();
+                    NpgsqlCommand cmd = new NpgsqlCommand(@"SELECT * FROM save", con);
+                    NpgsqlDataAdapter adp = new NpgsqlDataAdapter(cmd);
+                    adp.Fill(dt);
+                    string data = Base64Decode(dt.Rows[0]["where"].ToString());
+                    return data;
+                    con.Close();
+                }
+            }
+            catch(Exception e)
+            {
+
             }
             return null;
         }
@@ -145,13 +165,13 @@ namespace query_builder.Controllers
             return System.Convert.ToBase64String(plainTextBytes);
         }
 
-        public static string Base64Decode(string base64EncodedData)//decode
+        public  string Base64Decode(string base64EncodedData)//decode
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
             return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
         }
 
-        public IActionResult sample()
+        public IActionResult outerQueryBuilder()
         {
             return View();
         } 
