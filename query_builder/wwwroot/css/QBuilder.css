@@ -1,0 +1,57 @@
+﻿.builderHeader {
+    height: 70px;
+    background-color: darkblue;
+    color: white;
+    font-family: sans-serif;
+}
+.QBuilder {
+    padding: 50px;
+    padding-left: 50px;
+}
+#headtext {
+    font-size: 25px;
+    padding-left: 200px;
+    padding-top: 15px;
+}
+.new_query {
+    font-size: 26px;
+    background-color: transparent;
+    border: none;
+    margin-top: 1%;
+}
+.saveName {
+    border-radius: 4px;
+    color: white;
+    margin-top: 20px;
+    height: 60px;
+    float: left;
+    width: 33.3%;
+    border-radius: 4px;
+    padding: 5px;
+}
+.edit_query {
+    font-size: 15px;
+    background-color: transparent;
+    border: none;
+    color:white;
+}
+.builderBody {
+    width: 100%;
+    padding: 10px;
+    
+}
+.parent2 {
+    background-color: #1c5c93;
+    width: 100%;
+    height: 100%;
+}
+.close_query {
+    font-size: 15px;
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+.fileName
+{
+    margin-top:2%;
+}

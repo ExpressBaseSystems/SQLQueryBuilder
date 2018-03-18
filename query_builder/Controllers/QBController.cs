@@ -19,7 +19,7 @@ namespace query_builder.Controllers
     {
         // GET: /<controller>/
         [HttpGet]
-        public IActionResult QueryBuilder()
+        public IActionResult QueryBuilder(int objid)
         {
             Dictionary<string, List<Coloums>> vals = new Dictionary<string, List<Coloums>>();
 
@@ -121,60 +121,53 @@ namespace query_builder.Controllers
             return View();
         }
         [HttpPost]
-        public string selectClause(string data)
+        public string selectClause(string Json, string Name)
         {
-            data = Base64Encode(data);
+            //var req = HttpContext.Request.Form;
+            //string name = req["Name"];
+            //string json = req["Json"].ToString();
             using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
             {
-                DataTable dt = new DataTable();
                 con.Open();
-                string sql = string.Format("INSERT INTO save VALUES ('{0}')",data);
+                string sql = string.Format("INSERT INTO save(filename, date_created, objects)VALUES('{0}',now(),'{1}')", Name, Json);
                 NpgsqlCommand cmd = new NpgsqlCommand(sql, con);
-                var i =cmd.ExecuteNonQuery();
+                var rsp =cmd.ExecuteNonQuery();
+
                 con.Close();
             }
 
             return null;
         }
          [HttpGet]
-        public string selectClauseGet()
-        {
-            try
-            {
-                using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
-                {
-                    DataTable dt = new DataTable();
-                    con.Open();
-                    NpgsqlCommand cmd = new NpgsqlCommand(@"SELECT * FROM save", con);
-                    NpgsqlDataAdapter adp = new NpgsqlDataAdapter(cmd);
-                    adp.Fill(dt);
-                    string data = Base64Decode(dt.Rows[0]["where"].ToString());
-                    return data;
-                    con.Close();
-                }
-            }
-            catch(Exception e)
-            {
-
-            }
-            return null;
-        }
-        public string Base64Encode(string data)//encode
-        {
-            var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(data);
-            return System.Convert.ToBase64String(plainTextBytes);
-        }
-
-        public  string Base64Decode(string base64EncodedData)//decode
-        {
-            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-        }
-
         public IActionResult outerQueryBuilder()
         {
+            List<saveClass> select = new List<saveClass>();
+            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
+            {
+                DataTable dt = new DataTable();
+                con.Open();
+                NpgsqlCommand cmd = new NpgsqlCommand(@"SELECT * FROM save", con);
+                NpgsqlDataAdapter adp = new NpgsqlDataAdapter(cmd);
+                adp.Fill(dt);
+              
+                foreach (DataRow dr in dt.Rows)
+                {
+                    var save = new saveClass()
+                    {
+                        fid = Convert.ToInt32(dr["id"]),
+                        fname = dr["filename"].ToString(),
+                        fdate = Convert.ToDateTime(dr["date_created"]),
+                    };
+                   
+                    select.Add(save);
+                }
+            }
+            string json = JsonConvert.SerializeObject(select);
+            ViewBag.savelist = json;
             return View();
-        } 
+        }
+
+       
     }
 }
 

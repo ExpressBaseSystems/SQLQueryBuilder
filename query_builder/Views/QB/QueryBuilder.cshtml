@@ -45,6 +45,7 @@
     <div class="container-fluid builder-window">
         <div class="row builder-window-row">
             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 Builder-toolbox">
+                <button type="button" class="btn btn-xs btn-success" data-target="#myModal" data-toggle="modal">SAVE</button>
                 <br />
                 <br />
                 <br />
@@ -93,6 +94,32 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <h4 class="modal-title">Save File</h4>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" id="queryobj_name" name="Name" class="form-control fileNameText" />
+                            </div>
+                            <input type="hidden" id="json_input" name="Json" />
+
+                        </div>
+                        <div class="modal-footer">
+                            <input type="button" id="save_queryobj" class="btn btn-default saveQB" value="Save"/>
+                        </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 
 </body>

@@ -1,5 +1,6 @@
 ﻿var counter = 0;
-var WhereBuilder = function () {
+var WhereBuilder = function (Queryobj) {
+    this.QueryObj = Queryobj;
     this.tbName = [];
     this.dragableArray = [];
     this.DesignPane = $(".DesignPane");
@@ -42,12 +43,13 @@ var WhereBuilder = function () {
         this.id = null;
         this.condTabName = "";
         this.CName = "";
+        this.CNmType = "";
         this.Operator = "";
         this.Value = "";
     };
 
     this.WHEREclouseQ = new this.ConditionGroup();
-
+    
     this.makeDroppable = function ($storeTableNames)
     {
         this.storedNames = $storeTableNames;
@@ -85,7 +87,7 @@ var WhereBuilder = function () {
     this.tableOnDrop = function (el, target, source, sibling) {
         var targetId = $(target).attr("id");
         var sourceId = $(source).attr("id");
-        if (sourceId == "treeview_" + this.subtreeName) {
+        if (sourceId === "treeview_" + this.subtreeName) {
             this.droploc = $(target);
             this.droploc_id = $(target).attr("id");
             this.columnName = $(el).attr("colname");
@@ -209,7 +211,7 @@ var WhereBuilder = function () {
 
     this.recCondGrp = function (Coll) {
         for (var i = 0; i < Coll.length; i++) {
-            if (this.locid == Coll[i]['id']) {
+            if (this.locid === Coll[i]['id']) {
                 Coll[i].ConditionGroup_Coll.push(this.cg); // push condition into condition collection
                 return false;
             }
@@ -241,8 +243,7 @@ var WhereBuilder = function () {
         var parentBox = $(event.target).parent().parent().siblings().attr("id");
         $(event.target).addClass('active');
         $(event.target).siblings().removeClass('active');
-        //$(event.target).css('background-color', 'blue');
-        if (parentBox == "firstBody") {
+        if (parentBox === "firstBody") {
             this.WHEREclouseQ.operator = Opr;
         }
         else {
@@ -254,7 +255,7 @@ var WhereBuilder = function () {
     this.recgrpAndOrBtnFn = function (coll, parentBox, Opr) {
 
         for (var i = 0; i < coll.length; i++) {
-            if (parentBox == coll[i]['id']) {
+            if (parentBox === coll[i]['id']) {
                 coll[i].operator = Opr;
                 return false;
 
@@ -276,12 +277,13 @@ var WhereBuilder = function () {
         this.datatype_check(this.condId);
         this.cond = new this.Condition(); //new condition created
         this.cond.id = this.condId;
+        this.cond.CNmType = this.datatype;
         this.cond.condTabName = this.onDropTabName;
         this.cond.CName = this.columnName;
         this.cond.Operator = $("#select_id option:selected").text();
         this.condFlatObj[this.condId] = this.cond;
 
-        if (this.droploc_id == "firstBody") {
+        if (this.droploc_id === "firstBody") {
             this.WHEREclouseQ.Condition_Coll.push(this.cond);
         }
         else {
@@ -291,27 +293,27 @@ var WhereBuilder = function () {
     };
 
     this.datatype_check = function ($container) {
-        if (this.datatype == "text") {
+        if (this.datatype === "text") {
             $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline keypressEventText"  id = "${this.normalTextId}">`);
             this.loopcheck(this.text, $container);
         }
-        else if (this.datatype == "integer") {
+        else if (this.datatype === "integer") {
             $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline keypressEventText"  id = "${this.normalTextId}">`);
             this.loopcheck(this.integer, $container);
 
         }
-        else if (this.datatype == "date") {
+        else if (this.datatype === "date") {
             $("#" + this.condId + " select").after(` <input type="date" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${this.boolTextId}"/>`)
             this.loopcheck(this.date, $container);
         }
-        else if (this.datatype == "real") {
+        else if (this.datatype === "real") {
             this.loopcheck(this.real, $container);
         }
-        else if (this.datatype == "boolean") {
+        else if (this.datatype === "boolean") {
             $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${this.boolTextId}">`)
             this.loopcheck(this.boolean, $container);
         }
-        else if (this.datatype == "time") {
+        else if (this.datatype === "time") {
             $("#" + this.condId + " select").after(` <input type="time" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${this.boolTextId}"/>`)
             this.loopcheck(this.time, $container);
         }
@@ -343,7 +345,7 @@ var WhereBuilder = function () {
         droploc = $(event.target).closest(".btn").parent();
 
         var condObjId = $el.attr("flatobjid");
-        for (var key in this.condFlatObj) {
+        for (let key in this.condFlatObj) {
             if (condObjId === key) {
                 colName = this.condFlatObj[key].CName;
                 optr = this.condFlatObj[key].Operator;
@@ -370,7 +372,7 @@ var WhereBuilder = function () {
         var $el = $(event.target);
         var condDataType = $el.siblings(".columnName").attr("dataType");
         var condObjId = $el.attr("flatObjId");
-        if (condDataType == "text") {
+        if (condDataType === "text") {
 
 
             try {
@@ -391,10 +393,10 @@ var WhereBuilder = function () {
                     return true;
                 }
 
-                if ((charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123) || (charCode == 37) || (charCode == 95)) {
+                if ((charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123) || (charCode === 37) || (charCode === 95)) {
                     for (var key in this.condFlatObj) {
                         if (condObjId === key) {
-                            this.condFlatObj[key].Value = "'" + cont + "'";
+                            this.condFlatObj[key].Value =cont;
                         }
                     }
                 }
@@ -402,7 +404,7 @@ var WhereBuilder = function () {
 
 
                 else {
-                    //  $("#errmsg").html("Digits Only").show().fadeOut("slow");
+                    
                     return false;
                 }
             }
@@ -464,7 +466,7 @@ var WhereBuilder = function () {
         var condObjId = $el.attr("flatObjId");
         if (condDataType == "boolean") {
             if (con == "y" || con == "Y" || con == "f" || con == "F" || con == "yes" || con == "no" || con == "YES" || con == "NO" || con == "true" || con == "false" || con == "TRUE" || con == "FALSE" || con == "T" || con == "F" || con == "False" || con == "True" || con == "Yes" || con == "No") {
-                for (var key in this.condFlatObj) {
+                for (let key in this.condFlatObj) {
                     if (condObjId === key) {
                         this.condFlatObj[key].Value = con;
                     }
@@ -472,7 +474,7 @@ var WhereBuilder = function () {
             }
             else {
                 $el.val("");
-                for (var key in this.condFlatObj) {
+                for (let key in this.condFlatObj) {
                     if (condObjId === key) {
                         this.condFlatObj[key].Value = "";
                     }
@@ -480,16 +482,16 @@ var WhereBuilder = function () {
             }
         }
         else if (condDataType == "date") {
-            for (var key in this.condFlatObj) {
+            for (let key in this.condFlatObj) {
                 if (condObjId === key) {
-                    this.condFlatObj[key].Value = "'" + con +"'";
+                    this.condFlatObj[key].Value =con;
                 }
             }
         }
-        else if (condDataType == "time") {
-            for (var key in this.condFlatObj) {
+        else if (condDataType === "time") {
+            for (let key in this.condFlatObj) {
                 if (condObjId === key) {
-                    this.condFlatObj[key].Value = "'" + con + "'";
+                    this.condFlatObj[key].Value = con;
                 }
             }
         }
@@ -500,7 +502,7 @@ var WhereBuilder = function () {
         var optionText = optionSelected.text();
         var $el = $(event.target);
         var condObjId = $el.attr("flatobjid");
-        for (var key in this.condFlatObj) {
+        for (let key in this.condFlatObj) {
             if (condObjId === key) {
                 this.condFlatObj[key].Operator = optionText;
             }
@@ -514,11 +516,13 @@ var WhereBuilder = function () {
         $("#" + $el.parent().attr("id")).remove();
         this.popCollCondRec(this.WHEREclouseQ, source, dropObjid);
     };
+
     this.createQueryForCondGroup = function (condGrp) {
         if (condGrp.Condition_Coll.length > 0) {
-            var queryString = "((" + condGrp.Condition_Coll[0]["CName"] + " " + condGrp.Condition_Coll[0]["Operator"] + " " + condGrp.Condition_Coll[0]["Value"] + ") ";
+           
+            var queryString = "((" + condGrp.Condition_Coll[0]["CName"] + " " + condGrp.Condition_Coll[0]["Operator"] + " " + ((condGrp.Condition_Coll[0]["CNmType"]=== ("text" || "date" || "time")) ? "'"+ condGrp.Condition_Coll[0]["Value"] + "'" : condGrp.Condition_Coll[0]["Value"]) + ") ";
             for (i = 1; i < condGrp.Condition_Coll.length; i++)
-                queryString += condGrp.operator + " (" + condGrp.Condition_Coll[i]["CName"] + " " + condGrp.Condition_Coll[i]["Operator"] + " " + condGrp.Condition_Coll[i]["Value"] + ") ";
+                queryString += condGrp.operator + " (" + condGrp.Condition_Coll[i]["CName"] + " " + condGrp.Condition_Coll[i]["Operator"] + " " + ((condGrp.Condition_Coll[i]["CNmType"] === ("text" || "date" || "time")) ? "'" + condGrp.Condition_Coll[i]["Value"] + "'" : condGrp.Condition_Coll[i]["Value"]) + ") ";
             //queryString += ")";
             return queryString;
         }
@@ -535,6 +539,7 @@ var WhereBuilder = function () {
         }
         return fString;
     };
+
     this.designPaneFn = function () {
         $(".treeviewDragula").hide();
         $("#tables-cont").show();
@@ -560,7 +565,17 @@ var WhereBuilder = function () {
     this.init();
 }
 
+//this.createQueryForCondGroup = function (condGrp) {
+//    if (condGrp.Condition_Coll.length > 0) {
 
+//        var queryString = "((" + condGrp.Condition_Coll[0]["CName"] + " " + condGrp.Condition_Coll[0]["Operator"] + " " + condGrp.Condition_Coll[0]["Value"] + ") ";
+//        for (i = 1; i < condGrp.Condition_Coll.length; i++)
+//            queryString += condGrp.operator + " (" + condGrp.Condition_Coll[i]["CName"] + " " + condGrp.Condition_Coll[i]["Operator"] + " " + condGrp.Condition_Coll[i]["Value"] + ") ";
+//        //queryString += ")";
+//        return queryString;
+//    }
+//    return "";
+//};
 
 
 

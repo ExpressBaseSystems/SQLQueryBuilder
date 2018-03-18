@@ -29,6 +29,19 @@ var QueryBuilder = function (object)
     this.query = [];
     this.tb = [];
 
+    var QueryObject = function () {
+        this.TableCollection =  [];
+        this.QueryString= "";
+        this.Conditions = { };
+    };
+
+    this.tables = function () {  //Constructor
+        this.id = "";
+        this.tableName = "";
+        this.columns = [];
+        this.aliasName = "";
+    };
+
     this.appendDraggableTableNames = function () {
         for (var key in this.TableSchema)
         {
@@ -38,7 +51,7 @@ var QueryBuilder = function (object)
         
     };
 
-   this.appendDragulaTableNames = function ()
+    this.appendDragulaTableNames = function ()
     {
         for (var key in this.TableSchema) {
             $("#dragula-tables-cont").append(`<ul class="treeviewDragula" style="display:none">
@@ -51,8 +64,7 @@ var QueryBuilder = function (object)
         }
 
     };
-   //style = "list-style: none"
-    
+
     this.appendTCol = function ($container, colArray) {
         for (i = 0; i < colArray.length; i++) {
             $container.children("ul").append(`<li class="col-draggable" colname="${colArray[i].cname}"  datatype="${colArray[i].type}">${colArray[i].cname}</li>`);
@@ -68,7 +80,7 @@ var QueryBuilder = function (object)
         this.DesignPane.droppable({
             accept: ".t-draggable",
             drop: this.tableOnDrop.bind(this)
-        })
+        });
     };
 
     this.tableOnDrop = function (event, ui) {
@@ -78,41 +90,49 @@ var QueryBuilder = function (object)
         this.top = event.pageY - this.droploc.offset().top;
         this.tableName = $(ui.draggable).attr('tname');
         this.objId = this.tableName + this.IdCounters["TableCount"]++;
-        this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};"> <div class="Table">
+        this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
+                                <div class="Table">
                                 <div id="tbhd_${this.tableName}">${this.tableName}</div>  
                                 <div id="col-container${this.objId}"></div></div>`);
         this.addColoums("col-container" + this.objId);
         $("#" + this.objId).draggable({ containment: ".DesignPane" });
+        this.tablesObj = new this.tables();
+        this.tablesObj.tableName = this.tableName;
+        this.tablesObj.id = this.objId;
+        this.saveQueryObject.TableCollection.push(this.tablesObj);
         this.dupTableNames.push(this.tableName);
         for (var i = 0; i < this.dupTableNames.length; i++) {
-            if (this.storeTableNames.indexOf(this.dupTableNames[i]) == -1) {
-                this.storeTableNames.push(this.dupTableNames[i])
-            }
+            if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1) 
+                this.storeTableNames.push(this.dupTableNames[i]);
         }
        
     };
 
     this.addColoums = function ($container) {
         this.treepusharray();
-        for (i = 0; i < this.TableSchema[this.tableName].length; i++) {
+        for (i = 0; i < this.TableSchema[this.tableName].length; i++)
+        {
+            this.keyId = "keyId" + this.IdCounters["TableCount"]++;
             this.item = this.TableSchema[this.tableName][i];
-            $("#" + $container).append(`<div class="col" tabindex="1" id="${this.tableName}-col${i}" cnm="${this.item.cname}" 
-                datatp="${this.item.type}" con="${this.item.constraints}" fortnm="${this.item.foreign_tnm}" 
-                forcnm="${this.item.foreign_cnm}" ><span><input type="checkbox" id="mycheck" class="checkBoxClass" /></span>
-                <span id="ann">${this.item.cname}</span><span>${this.item.type}</span><span class="icon"></span></div>`);
+            $("#" + $container).append(`<div class="col form-inline" tabindex="1" id="${this.tableName}-col${i}" cnm="${this.item.cname}" datatp="${this.item.type}" con="${this.item.constraints}" fortnm="${this.item.foreign_tnm}" forcnm="${this.item.foreign_cnm}" >
+                <span><input type="checkbox" id="mycheck" class="checkBoxClass" /></span>
+                <span id="ann">${this.item.cname}</span>
+                <span>${this.item.type}</span>
+                <span><i class="fa fa-key" id="${this.keyId}" aria-hidden="true" style="display:none"></i></span></div>`);
             this.subtreeappend();
-
+            if (this.item.constraints === "PRIMARY KEY") 
+                $("#" + this.keyId).show();
         }
+       
         this.treeFunction();
         $('input[type="checkbox"]').on("click", this.get_parent.bind(this));
         $(".col").on("focus", this.sortOrder.builderContextmenu);
     };
 
     this.treepusharray = function () {
-        if (this.array.indexOf(this.tableName) === -1)
+        if (this.array.indexOf(this.tableName) === -1) {
             this.array.push(this.tableName);
-        else
-            return;
+        }
         $.each(this.dropObj.parent().parent().children(), function (i, obj) {
             $(obj).removeClass("tre");
         });
@@ -168,49 +188,69 @@ var QueryBuilder = function (object)
         this.whereClauseObjects.makeDroppable(this.storeTableNames);
     };
 
-    this.get_parent = function (event)
-    {
+    this.get_parent = function (event) {
         var obj = $(event.target).parent();
-        this.a = $(obj).parent().parent().siblings().text().trim();//
+        this.a = $(obj).parent().parent().siblings().text().trim();
         this.b = $(obj).parent().parent().parent().parent().attr("id");
         var ida = $(obj).parent().parent().parent().parent().attr("id").substr(-1);
-
         this.r = [];
-        if ($(event.target).prop("checked")) {
-            if ($(obj).next().attr("id") == "ann") {
-
-                if (Object.keys(this.QueryDisply).indexOf(this.b) === -1) {
+        if ($(event.target).prop("checked"))
+        {
+            if ($(obj).next().attr("id") === "ann")
+            {
+                for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++)
+                {
+                    if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+                        this.saveQueryObject["TableCollection"][i].columns.push($(obj).next().text());
+                    }
+                }
+                if (Object.keys(this.QueryDisply).indexOf(this.b) === -1)
+                {
                     this.r.push($(obj).next().text());
                     this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
+                    var aliasNm = aliasarray[ida];
+                    for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
+                        if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+                            this.saveQueryObject["TableCollection"][i].aliasName = aliasNm;
+                        }
+                    }
                 }
-                else {
-                    $.each($("#col-container" + this.b).children(), function (i, ob) {
+                else
+                {
+                    $.each($("#col-container" + this.b).children(), function (i, ob)
+                    {
                         if ($(ob).children().find("#mycheck").prop("checked")) {
                             this.r.push($(ob).children("#ann").text());
                         }
                     }.bind(this));
                     this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
                 }
-
             }
 
         }
-        else {
+        else
+        {
+            for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++)
+            {
+                if (this.saveQueryObject["TableCollection"][i].id === this.objId)
+                {
+                  this.saveQueryObject["TableCollection"][i].columns.splice(i,1);
+                }
+            }
+           
             $.each($("#col-container" + this.b).children(), function (i, obe) {
                 if ($(obe).children().find("#mycheck").prop("checked")) {
                     this.r.push($(obe).children("#ann").text());
-
                 }
-
             }.bind(this));
 
             this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
-            if (this.r.length == 0) {
+            if (this.r.length === 0) {
                 delete this.QueryDisply[this.b];
             }
 
         }
-        if (Object.keys(this.QueryDisply).length != 0)
+        if (Object.keys(this.QueryDisply).length !== 0)
         {
 
             var str = "SELECT";
@@ -227,18 +267,22 @@ var QueryBuilder = function (object)
                 var updateKey = key.substring(key.length - 1, -1);
                 str += ` ${updateKey} ${value.alias},`;
             });
-            this.lateststr = str.substring(str.length - 1, -1)
-            if (this.saveFormatString != "") {
+            this.lateststr = str.substring(str.length - 1, -1);
+            if (this.saveFormatString !== "") {
                 this.mergeString = this.lateststr + " " + "\n" + "\t" + "WHERE" + " " + this.saveFormatString;
+                this.saveQueryObject.QueryString = btoa(this.mergeString);
                 this.editor.setValue((`${this.mergeString}`).replace(/,\s*$/, ""));
             }
-            else
+            else {
+                this.saveQueryObject.QueryString = btoa(this.lateststr);
                 this.editor.setValue((`${this.lateststr}`).replace(/,\s*$/, ""));
-        }
+            }
+       }
         else
             this.editor.setValue("");
 
-    }
+    };
+
     this.finalQueryFn = function (event) {
 
         $(".keypressEventText").each(function (i, ob) {
@@ -251,36 +295,41 @@ var QueryBuilder = function (object)
         });
         var finalString = this.whereClauseObjects.recFinalQueryFn(this.whereClauseObjects.WHEREclouseQ);
         this.saveFormatString = finalString.substr(1);
-        if (this.lateststr != "") {
+        if (this.lateststr !== "") {
             this.mergeString = this.lateststr + " "+ "\n" + "\t" + "WHERE" + " " + this.saveFormatString;
         }
+        this.saveQueryObject.QueryString = btoa(this.mergeString);
         this.editor.setValue((`${this.mergeString}`).replace(/,\s*$/, ""));
-        //this.callAjax(this.saveFormatString);
-        var myJSON = JSON.stringify(this.whereClauseObjects.WHEREclouseQ);
-        this.callAjax(myJSON);
-        //var myJSON = JSON.stringify(finalString);
     };
+    
 
-    this.callAjax = function (ob) {
-        $.ajax({
+    this.saveQBFn = function () {
+        var str = JSON.stringify(this.saveQueryObject);
+             $.ajax({
             type: 'POST',
             url: "../QB/selectClause",
-            data: { data: ob },
+            data: {
+                Json: str,
+                Name: $("#queryobj_name").val()
+            },
             success: function (data) {
-
+                $("#myModal").modal("toggle");
             }
-        })
+        });  
     };
 
     this.init = function () {
+        this.saveQueryObject = new QueryObject();
         this.appendDraggableTableNames();
         this.appendDragulaTableNames();
         this.makeDroppable();
         this.sortOrder = new SqLsortOrder();
-        this.whereClauseObjects = new WhereBuilder();
+        this.whereClauseObjects = new WhereBuilder(this);
+        this.saveQueryObject.Conditions = this.whereClauseObjects.WHEREclouseQ;
         $("a[href='#Condition']").on("click", this.whereClauseFn.bind(this));
         $("body").on("click", ".saveQuery", this.finalQueryFn.bind(this));
-        this.editor = new CodeMirror.fromTextArea(document.getElementById("QueryPane"),
+        $("body").on("click", ".saveQB", this.saveQBFn.bind(this)); 
+       this.editor = new CodeMirror.fromTextArea(document.getElementById("QueryPane"),
             {
                 mode: "text/x-pgsql",
                 lineNumbers: true,
@@ -290,11 +339,13 @@ var QueryBuilder = function (object)
                 foldGutter: { rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment) },
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
             });
+        //$("#modal_btnSave").on("click", this.saveQBFn.bind(this));
+        //$("#save_query_form").on("submit", this.callAjax.bind(this));
+        //$("#save_queryobj").on("click", this.saveQBFn.bind(this));
     };
 
     this.init();
 }
-
 $.fn.extend({
     treeview: function () {
         return this.each(function () {
@@ -309,7 +360,7 @@ $.fn.extend({
                 branch.prepend("<i class='tree-indicator glyphicon glyphicon-chevron-right'></i>");
                 branch.addClass('tree-branch');
                 branch.on('click', function (e) {
-                    if (this == e.target) {
+                    if (this === e.target) {
                         var icon = $(this).children('i:first');
                         icon.toggleClass("glyphicon-chevron-down glyphicon-chevron-right");
                         $(this).children().children().toggle();
