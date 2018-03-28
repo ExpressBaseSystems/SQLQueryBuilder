@@ -53,9 +53,11 @@ var QueryBuilder = function (object, editobject) {
         this.Conditions = {};
     };
 
-    this.tables = function () {  //Constructor
+    this.tables = function () {  
         this.id = "";
         this.tableName = "";
+        this.leftPos = "";
+        this.topPos = "";
         this.columns = [];
         this.aliasName = "";
     };
@@ -115,6 +117,16 @@ var QueryBuilder = function (object, editobject) {
         this.left = event.pageX - this.droploc.offset().left;
         this.top = event.pageY - this.droploc.offset().top;
         this.tableName = $(ui.draggable).attr('tname');
+        this.tableOnDropAppend();
+    };
+
+    this.tableOnDropAppend = function (objId)
+    {
+        this.IdCounters["TableCount"]++
+        if (objId === undefined || objId === null) 
+            this.objId = this.tableName + this.IdCounters["TableCount"]++;
+        else
+            this.objId = objId;
         this.objId = this.tableName + this.IdCounters["TableCount"]++;
         this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
                                 <div class="Table">
@@ -568,10 +580,13 @@ var QueryBuilder = function (object, editobject) {
             }
 
         }
-        else {
-            for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-                if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
-                    this.saveQueryObject["TableCollection"][i].columns.splice(i, 1);
+        else
+        {
+            for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++)
+            {
+                if (this.saveQueryObject["TableCollection"][i].id === this.objId)
+                {
+                  this.saveQueryObject["TableCollection"][i].columns.splice(i,1);
                 }
             }
 
@@ -677,25 +692,31 @@ var QueryBuilder = function (object, editobject) {
 
     //...................
     this.finalQueryFn = function (event) {
-
+        var temp = true;
         $(".keypressEventText").each(function (i, ob) {
-            if ($(ob).val().trim() === "")
+            if ($(ob).val().trim() === "") {
                 $("#saveError").html("please fill out fields").show().fadeOut("slow");
+                temp = false;
+            }
         });
         $(".changeEventTextFn").each(function (i, ob) {
-            if ($(ob).val().trim() === "")
+            if ($(ob).val().trim() === "") {
                 $("#saveError").html("please fill out fields").show().fadeOut("slow");
+                temp = false;
+            }
         });
-        var finalString = this.whereClauseObjects.recFinalQueryFn(this.whereClauseObjects.WHEREclouseQ);
-        this.saveFormatString = finalString.substr(1);
-        if (this.lateststr !== "") {
-            this.mergeString = this.lateststr + " " + "\n" + "\t" + "WHERE" + " " + this.saveFormatString;
-        }
-        this.saveQueryObject.QueryString = btoa(this.mergeString);
-
+       // if (temp) {
+            var finalString = this.whereClauseObjects.recFinalQueryFn(this.whereClauseObjects.WHEREclouseQ);
+            this.saveFormatString = finalString.substr(1);
+            if (this.lateststr !== "")
+                this.mergeString = this.lateststr + " " + "\n"+ "WHERE" + " " + this.saveFormatString;
+            this.saveQueryObject.QueryString = btoa(this.mergeString);
+            this.editor.setValue((`${this.mergeString}`).replace(/,\s*$/, ""));
+      //  }
     };
 
-    this.saveQBFn = function () {
+    this.saveQBFn = function ()
+    {
         var str = JSON.stringify(this.saveQueryObject);
         $.ajax({
             type: 'POST',
@@ -710,25 +731,26 @@ var QueryBuilder = function (object, editobject) {
         });
     };
 
-    this.renderTableOnEdit = function () {
-
-        for (var i = 0; i < this.ObjectSchema.TableCollection.length; i++) {
+    this.renderTableOnEdit = function ()
+    {
+       for (var i = 0; i < this.ObjectSchema.TableCollection.length; i++) {
             this.droploc = $("#designpane");
             this.tableName = this.ObjectSchema.TableCollection[i]["tableName"];
-            this.dropObj = $(".treeview").children('[tname= ' + this.tableName + ']')
+            this.dropObj = $(".treeview").children('[tname= '+this.tableName+']')
             this.left = this.ObjectSchema.TableCollection[i]["leftPos"];
             this.top = this.ObjectSchema.TableCollection[i]["topPos"];
-            this.objId = this.ObjectSchema.TableCollection[i]["id"];
+            var objId = this.ObjectSchema.TableCollection[i]["id"];
             var tableAliasName = this.ObjectSchema.TableCollection[i]["aliasName"];
-            this.tableOnDropAppend();
+            this.tableOnDropAppend(objId);
         }
     };
 
-    this.init = function () {
-        this.saveQueryObject = new QueryObject();
+    this.init = function ()
+    {
         this.appendDraggableTableNames();
         this.appendDragulaTableNames();
         this.makeDroppable();
+        this.saveQueryObject = new QueryObject();  
         this.sortOrder = new SqLsortOrder();
         this.whereClauseObjects = new WhereBuilder(this);
         this.saveQueryObject.Conditions = this.whereClauseObjects.WHEREclouseQ;
@@ -746,12 +768,13 @@ var QueryBuilder = function (object, editobject) {
                 foldGutter: { rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment) },
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
             });
-        if (this.isNew) {
+        if (this.isNew)
+        {
         }
         else {
             this.renderTableOnEdit();
-        }
-
+        }        
+        
     };
 
     this.init();
