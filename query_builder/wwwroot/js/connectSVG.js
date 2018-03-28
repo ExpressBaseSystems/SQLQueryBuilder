@@ -35,10 +35,7 @@
             _lines.push(option);
             this.connect(option);
         };
-        //this.drawCircle = function (circ) {
-        //    _circles.push(circ);
-        //    this.connect(circ);
-        //};//......AB circle
+    
         this.drawAllLine = function (option) {
 
 			/*Mandatory Fields------------------
@@ -58,17 +55,7 @@
                 });
             }
         };
-        //this.drawALLCircle = function (circ) {
-        //    if (circ.selector == (option.left_node || option.right_node)) {
-        //        $(circ.selector).each(function (index) {
-        //        var circ2 = new Object();
-        //        $.extend(circ2, circ);
-        //        circ2.position = left_node;
-        //        circ2.position = right_node;
-        //        });
-        //    }       
-        //};//.......AB Circles
-
+        
         //This Function is used to connect two different div with a dotted line.
         this.connect = function (option) {
             try {
@@ -77,6 +64,7 @@
                 var _left = new Object(); //This will store _left elements offset  
                 var _right = new Object();	//This will store _right elements offset	
                 var _error = (option.error == 'show') || false;
+                var counter = option.Counter;
                 /*
                 option = {
                     left_node - Left Element by ID - Mandatory
@@ -105,7 +93,7 @@
                             break;
 
                         case 'fulljoin':
-                            _color = 'red';
+                            _color = '#FF0000';
                             break;
 
                         case 'leftjoin':
@@ -153,13 +141,13 @@
                     }
 
                     //Get Left point and Right Point
-                    _left.x = $(option.left_node).offset().left + $(option.left_node).outerWidth() - 255;
+                    _left.x = $(option.left_node).offset().left + $(option.left_node).outerWidth() - 240;
                     _left.y = $(option.left_node).offset().top + ($(option.left_node).outerHeight() / 2) - 100 + 20;
-                    _right.x = $(option.right_node).offset().left - 265;
+                    _right.x = $(option.right_node).offset().left - 238;
                     _right.y = $(option.right_node).offset().top + ($(option.right_node).outerHeight() / 2) - 100 + 20;
 
                     //Create a group
-                    var g = _svg.group({ strokeWidth: 2, strokeDashArray: _dash, left: id = option.left_node, right: id = option.right_node });
+                    var g = _svg.group({ strokeWidth: 2, strokeDashArray: _dash, id: id = counter, left: id = option.left_node, right: id = option.right_node });
 
                     //Draw Line
                     var _gap = option.horizantal_gap || 0;
