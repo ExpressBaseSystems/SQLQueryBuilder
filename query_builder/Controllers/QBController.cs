@@ -17,6 +17,7 @@ namespace query_builder.Controllers
 {
     public class QBController : Controller
     {
+
         // GET: /<controller>/
         [HttpGet]
         public IActionResult QueryBuilder(int objid)
