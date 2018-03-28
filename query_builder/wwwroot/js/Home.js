@@ -142,6 +142,13 @@ var QueryBuilder = function (object, editobject) {
         this.tablesObj.tableName = this.tableName;
         this.tablesObj.id = this.objId;
         this.saveQueryObject.TableCollection.push(this.tablesObj);
+
+        for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
+            if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+                this.saveQueryObject["TableCollection"][i].leftPos = this.left;
+                this.saveQueryObject["TableCollection"][i].topPos = this.top;
+            }
+        }
         this.dupTableNames.push(this.tableName);
         for (var i = 0; i < this.dupTableNames.length; i++) {
             if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1)
@@ -184,32 +191,32 @@ var QueryBuilder = function (object, editobject) {
 
     };
 
-    this.tableOnDropAppend = function () {
-        this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
-                                <div class="Table">
-                                <div id="tbhd_${this.tableName}">${this.tableName}</div>  
-                                <div id="col-container${this.objId}"></div></div>`);
-        this.addColoums("col-container" + this.objId);
-        $("#" + this.objId).draggable({
-            containment: ".DesignPane",
-            stop: this.onDragStopFn.bind(this)
-        });
-        this.tablesObj = new this.tables();
-        this.tablesObj.tableName = this.tableName;
-        this.tablesObj.id = this.objId;
-        this.saveQueryObject.TableCollection.push(this.tablesObj);
-        for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-            if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
-                this.saveQueryObject["TableCollection"][i].leftPos = this.left;
-                this.saveQueryObject["TableCollection"][i].topPos = this.top;
-            }
-        }
-        this.dupTableNames.push(this.tableName);
-        for (var i = 0; i < this.dupTableNames.length; i++) {
-            if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1)
-                this.storeTableNames.push(this.dupTableNames[i]);
-        }
-    };//.......
+    //this.tableOnDropAppend = function () {
+    //    this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
+    //                            <div class="Table">
+    //                            <div id="tbhd_${this.tableName}">${this.tableName}</div>  
+    //                            <div id="col-container${this.objId}"></div></div>`);
+    //    this.addColoums("col-container" + this.objId);
+    //    $("#" + this.objId).draggable({
+    //        containment: ".DesignPane",
+    //        stop: this.onDragStopFn.bind(this)
+    //    });
+    //    this.tablesObj = new this.tables();
+    //    this.tablesObj.tableName = this.tableName;
+    //    this.tablesObj.id = this.objId;
+    //    this.saveQueryObject.TableCollection.push(this.tablesObj);
+    //    for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
+    //        if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+    //            this.saveQueryObject["TableCollection"][i].leftPos = this.left;
+    //            this.saveQueryObject["TableCollection"][i].topPos = this.top;
+    //        }
+    //    }
+    //    this.dupTableNames.push(this.tableName);
+    //    for (var i = 0; i < this.dupTableNames.length; i++) {
+    //        if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1)
+    //            this.storeTableNames.push(this.dupTableNames[i]);
+    //    }
+    //};//.......
 
     this.onDragStopFn = function (event, ui) {
         var left = event.pageX - this.droploc.offset().left;
@@ -367,7 +374,7 @@ var QueryBuilder = function (object, editobject) {
         this.ForGrp[this.c].forcnames = $("#" + this.div1).attr('cnm');
         this.ForGrp[this.c].cnames = $("#" + this.div2).attr('cnm');
         this.ForGrp[this.c].tables = this.div2.split("-")[0];
-
+        this.Qdisply();
     };
 
     this.forignkeyline_Contextmenu = function (e) {
@@ -482,12 +489,7 @@ var QueryBuilder = function (object, editobject) {
             }
             else {
                 joinTnames.push(ForGrp[j].fortnames);
-                //for (var k = 0; k < j; k++) {
-                //    if (ForGrp[j].fortnames === ForGrp[k].fortnames || ForGrp[j].fortnames === ForGrp[this.firstvar].tables) {
-                //        var isRepeated = true;
-                //        break;
-                //    }
-                //}
+               
                 this.isRepeated = false;
                 $.each(ForGrp, function (i, obj) {
                     if (i < parseInt(j)) {
@@ -682,15 +684,14 @@ var QueryBuilder = function (object, editobject) {
                 this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str + " " + "WHERE" + " " + this.saveFormatString + "\n" /*+ "ORDER BY" + " " + sortstr*/);
             else if ((sortstr !== "") && (str !== ""))
                 this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str + " " + "ORDER BY" + " " + sortstr);
-            else
+            else if (str !== "")
                 this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str  /*+ "ORDER BY"+" "+ sortstr*/);
+            //else if (this.saveFormatString !== "")
+            //    this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str  /*+ "ORDER BY"+" "+ sortstr*/);
         }
 
     }
-    //.....
-
-
-    //...................
+ 
     this.finalQueryFn = function (event) {
         var temp = true;
         $(".keypressEventText").each(function (i, ob) {

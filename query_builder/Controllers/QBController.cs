@@ -24,7 +24,7 @@ namespace query_builder.Controllers
             Dictionary<string, List<Coloums>> vals = new Dictionary<string, List<Coloums>>();
             DataTable dts = new DataTable();
 
-            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
+            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=abby; CommandTimeout=500;"))
             {
                 DataTable dt = new DataTable();
                 con.Open();
@@ -137,7 +137,7 @@ namespace query_builder.Controllers
             //var req = HttpContext.Request.Form;
             //string name = req["Name"];
             //string json = req["Json"].ToString();
-            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
+            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=abby; CommandTimeout=500;"))
             {
                 con.Open();
                 string sql = string.Format("INSERT INTO save(filename, date_created, objects)VALUES('{0}',now(),'{1}')", Name, Json);
@@ -153,7 +153,7 @@ namespace query_builder.Controllers
         public IActionResult outerQueryBuilder()
         {
             List<saveClass> select = new List<saveClass>();
-            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
+            using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=abby; CommandTimeout=500;"))
             {
                 DataTable dt = new DataTable();
                 con.Open();
