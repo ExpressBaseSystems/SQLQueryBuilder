@@ -22,6 +22,7 @@ namespace query_builder.Controllers
         public IActionResult QueryBuilder(int objid)
         {
             Dictionary<string, List<Coloums>> vals = new Dictionary<string, List<Coloums>>();
+            DataTable dts = new DataTable();
 
             using (var con = new NpgsqlConnection("Host=localhost; Port=5432; Database=college; Username=postgres; Password=raju@94; CommandTimeout=500;"))
             {
@@ -113,10 +114,20 @@ namespace query_builder.Controllers
                     }
 
                 }
+                if (objid != 0)
+                {
+                    var sql = "select objects from save where id = @ids".Replace("@ids", objid.ToString());
+                    NpgsqlCommand cmds = new NpgsqlCommand(sql, con);
+                    NpgsqlDataAdapter adptr = new NpgsqlDataAdapter(cmds);
+                    adptr.Fill(dts);
+                }
                 con.Close();
             }
             string json = JsonConvert.SerializeObject(vals, Formatting.Indented);
-            ViewBag.text = "col";
+            if (objid != 0)
+                ViewBag.text = dts.Rows[0]["objects"].ToString(); 
+            else
+                ViewBag.text =  "{}";
             ViewBag.dict = json;
             return View();
         }

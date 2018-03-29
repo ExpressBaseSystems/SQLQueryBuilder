@@ -1,4 +1,4 @@
-﻿var counter = 0;
+﻿
 var WhereBuilder = function (Queryobj) {
     this.QueryObj = Queryobj;
     this.tbName = [];
@@ -22,7 +22,7 @@ var WhereBuilder = function (Queryobj) {
     this.text = ["=", "!=", "Like"];
     this.boolean = ["=", "=!"];
     this.time = ["=", "=!"];
-    this.groupCounter = 1;
+    this.groupCounter = 0;
     this.arraycol = [];
     this.ConditionPane = $(".conditiong-gp-container");
     this.where_cond_grp = $(".where_cond_grp");
@@ -35,6 +35,9 @@ var WhereBuilder = function (Queryobj) {
     this.ConditionGroup = function () {   //Constructor
         this.id = null;
         this.operator = "";
+        this.locId = "";
+        this.objids = "";
+        this.grpBtnid = "";
         this.ConditionGroup_Coll = [];
         this.Condition_Coll = [];
     };
@@ -43,9 +46,14 @@ var WhereBuilder = function (Queryobj) {
         this.id = null;
         this.condTabName = "";
         this.CName = "";
+        this.dropLocId = "";
         this.CNmType = "";
         this.Operator = "";
         this.Value = "";
+        this.valueSec = "";
+        this.editNormalTextId = "";
+        this.editSelectId = "";
+        this.boolTextId = "";
     };
 
     this.WHEREclouseQ = new this.ConditionGroup();
@@ -73,8 +81,7 @@ var WhereBuilder = function (Queryobj) {
 
     this.acceptFn = function (el, target, source, sibling) {
 
-       
-        if ($(target).attr("class") === "cols-cont")
+       if ($(target).attr("class") === "cols-cont")
             return false;
         else
             return true;
@@ -94,9 +101,6 @@ var WhereBuilder = function (Queryobj) {
             this.onDropTabName = $(source).parent().attr("tname");
             this.datatype = $(el).attr("datatype");
             $(el).remove();
-            this.condId = this.columnName + this.IdCounters["TableCount"]++;
-            this.normalTextId = "normalTextId" + this.IdCounters["TableCount"]++;
-            this.boolTextId = "boolTextId" + this.IdCounters["TableCount"]++;
             this.oncond();
 
         }
@@ -176,18 +180,23 @@ var WhereBuilder = function (Queryobj) {
         this.appendGroupCondition(appendloc);
     };
 
-    this.appendGroupCondition = function (appendloc) {
-        var objid = "groupCondition" + this.groupCounter++;
-        this.bodyid = "groupBody" + this.groupCounter++;
-
+    this.appendGroupCondition = function (appendloc, objid, bodyid, grpBtnid) {
+        this.groupCounter++;
+        if (objid === undefined || objid === null) {
+            objid = "groupCondition" + this.groupCounter;
+            this.bodyid = "groupBody" + this.groupCounter;
+            var grpBtnid = "grpBtnId" + this.groupCounter;
+        }
+        else
+           this.bodyid = bodyid;
         appendloc.append(`<div class="groupBox"  id= "${objid}" >
                             <div class=" conditiong-gp-container-header form-inline">
-                                <div class="btn-group btn-toggle where-toggle">
+                                <div class="btn-group btn-toggle where-toggle" id="${grpBtnid}">
                                     <button class="btn btn-sm btn-default grpAndOrBtn" value="AND">AND</button>
                                     <button class="btn btn-sm btn-default grpAndOrBtn active" value="OR">OR</button>
                                 </div>
                             <div class="btn-group where-btns">
-                                 <button type="button" data-counter="${counter}" class="btn btn-xs btn-success where-btn2 addGroup" id="group${counter}"><i class="glyphicon glyphicon-plus-sign"></i>Group</button>
+                                 <button type="button" class="btn btn-xs btn-success where-btn2 addGroup"><i class="glyphicon glyphicon-plus-sign"></i>Group</button>
                                  <button type="button" class="btn btn-xs btn-danger groupRemove" data-delete="group"><i class="glyphicon glyphicon-remove"></i> Delete</button>
                                 </div>
                         </div>
@@ -197,6 +206,9 @@ var WhereBuilder = function (Queryobj) {
         this.cg = new this.ConditionGroup();// new box object created
         this.cg.id = this.bodyid;         //add id into box
         this.cg.operator = "OR";
+        this.cg.locId = this.locid;
+        this.cg.grpBtnid = grpBtnid;
+        this.cg.objids = objid;
         if (this.locid == "firstBody") {
             this.WHEREclouseQ.ConditionGroup_Coll.push(this.cg);
         }
@@ -265,63 +277,82 @@ var WhereBuilder = function (Queryobj) {
         }
     };
 
-    this.oncond = function () {
+    this.oncond = function (condId, normalTextId, normalSelectId, boolTextId, editOperator, values) {
+        this.IdCounters["TableCount"]++
+        if (normalSelectId === undefined || normalSelectId === null) {
+            this.condId = this.columnName + this.IdCounters["TableCount"]++;
+            var normalTextId = "normalTextId" + this.IdCounters["TableCount"]++;
+            var normalSelectId = "normalSelectId" + this.IdCounters["TableCount"]++;
+            var normalTextIdSec = "normalTextIdSec" + this.IdCounters["TableCount"]++;
+            var boolTextId = "boolTextId" + this.IdCounters["TableCount"]++;
+        }
+        else 
+            this.condId = condId;
+           
         this.droploc.append(`<div class="droped form-inline" id="${this.condId}">
                                 <div class="d-inline columnName" dataType = "${this.datatype}">${this.columnName}</div>
-                                <select flatObjId="${this.condId}" class="form-control d-inline selectOptr" id="select_id" ></select>
+                                <select flatObjId="${this.condId}" class="form-control d-inline selectOptr" id=${normalSelectId} ></select>
                                 <button class="btn btn-default pull-right conditionEdit"  style="display:none;"><i class="fa fa-edit fa-lg"></i></button>
                                 <button flatObjId="${this.condId}" class="btn btn-default pull-right conditionCheck"><i class="fa fa-check fa-lg"></i></button>
                                 <button class="btn btn-default pull-right conditionRemove"><i class="fa fa-close fa-lg"></i></button>
                               </div>`);
 
-        this.datatype_check(this.condId);
+        this.datatype_check(this.condId, normalTextId, boolTextId, normalTextIdSec);
         this.cond = new this.Condition(); //new condition created
+        //if (!this.QueryObj.isNew) {
+        //    $("#" + this.normalTextId).val(this.values);
+        //    $("#" + this.normalSelectId+ "option:selected").val(this.editOperator);
+        //    this.cond.Value = $("#" + this.normalTextId).val();
+        //}
         this.cond.id = this.condId;
         this.cond.CNmType = this.datatype;
         this.cond.condTabName = this.onDropTabName;
         this.cond.CName = this.columnName;
-        this.cond.Operator = $("#select_id option:selected").text();
+        this.cond.dropLocId = this.droploc_id;
+        this.cond.editNormalTextId = normalTextId;
+        this.cond.editSelectId = normalSelectId;
+        this.cond.boolTextId = boolTextId;
+        $("#" + normalSelectId + " option[value= '" + editOperator + "']").attr("selected", true)
+        $("#" + boolTextId + " option[value= '" + editOperator + "']").attr("selected", true)
+        this.cond.Operator  = $("#" + normalSelectId).find("option:selected").text()
+        $("#" + normalTextId).val(values);
+        $("#" + boolTextId).val(values);
+        this.cond.Value = values;
         this.condFlatObj[this.condId] = this.cond;
 
-        if (this.droploc_id === "firstBody") {
+        if (this.droploc_id === "firstBody") 
             this.WHEREclouseQ.Condition_Coll.push(this.cond);
-        }
-        else {
+        else 
             this.recCond(this.WHEREclouseQ.ConditionGroup_Coll);
-        }
-
     };
 
-    this.datatype_check = function ($container) {
+    this.datatype_check = function ($container, normalTextId, boolTextId, normalTextIdSec) {
         if (this.datatype === "text") {
-            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline keypressEventText"  id = "${this.normalTextId}">`);
+            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline keypressEventText"  id = "${normalTextId}">`);
             this.loopcheck(this.text, $container);
         }
         else if (this.datatype === "integer") {
-            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline keypressEventText"  id = "${this.normalTextId}">`);
+            $("#" + this.condId + " select").after(`<input type="text" flatObjId="${this.condId}" data-identity = "firstTextBox" class="form-control d-inline keypressEventText"  id = "${normalTextId}"><input type="text" flatObjId="${this.condId}"  data-identity = "secTextBox" class="form-control d-inline keypressEventText"  id = "${normalTextIdSec}" style ="display:none">`);
             this.loopcheck(this.integer, $container);
 
         }
         else if (this.datatype === "date") {
-            $("#" + this.condId + " select").after(` <input type="date" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${this.boolTextId}"/>`)
+            $("#" + this.condId + " select").after(` <input type="date" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${boolTextId}"/>`)
             this.loopcheck(this.date, $container);
         }
-        else if (this.datatype === "real") {
-            this.loopcheck(this.real, $container);
-        }
-        else if (this.datatype === "boolean") {
-            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${this.boolTextId}">`)
+      else if (this.datatype === "boolean") {
+            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${boolTextId}">`)
             this.loopcheck(this.boolean, $container);
         }
         else if (this.datatype === "time") {
-            $("#" + this.condId + " select").after(` <input type="time" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${this.boolTextId}"/>`)
+            $("#" + this.condId + " select").after(` <input type="time" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${boolTextId}"/>`)
             this.loopcheck(this.time, $container);
         }
     };
 
     this.loopcheck = function (arr, $container) {
         for (i = 0; i < arr.length; i++) {
-            $("#" + $container + " select").append(`<option value="equal">${arr[i]}</option>`);
+            $("#" + $container + " select").append(`<option tabindex="1" value="${arr[i]}">${arr[i]}</option>`);
         }
 
     };
@@ -440,9 +471,19 @@ var WhereBuilder = function (Queryobj) {
                     return false;
                 }
                 else {
-                    for (var key in this.condFlatObj) {
-                        if (condObjId === key) {
-                            this.condFlatObj[key].Value = cont;
+                    for (var key in this.condFlatObj)
+                    {
+                        if (condObjId === key)
+                        {
+                            if (this.condFlatObj[key].Operator === "BETWEEN")
+                            {
+                                if ($el.attr("data-identity") === "firstTextBox")
+                                    this.condFlatObj[key].Value = cont;
+                                else
+                                    this.condFlatObj[key].valueSec = cont;
+                            } 
+                            else
+                                this.condFlatObj[key].Value = cont;
                         }
                     }
                 }
@@ -501,10 +542,15 @@ var WhereBuilder = function (Queryobj) {
         var optionSelected = $(event.target).find("option:selected");
         var optionText = optionSelected.text();
         var $el = $(event.target);
+       
         var condObjId = $el.attr("flatobjid");
         for (let key in this.condFlatObj) {
             if (condObjId === key) {
                 this.condFlatObj[key].Operator = optionText;
+                if (this.condFlatObj[key].Operator === "BETWEEN")
+                    $el.next().next().show();
+                else
+                    $el.next().next().hide();
             }
         }
     };
@@ -519,11 +565,22 @@ var WhereBuilder = function (Queryobj) {
 
     this.createQueryForCondGroup = function (condGrp) {
         if (condGrp.Condition_Coll.length > 0) {
-           
-            var queryString = "((" + condGrp.Condition_Coll[0]["CName"] + " " + condGrp.Condition_Coll[0]["Operator"] + " " + ((condGrp.Condition_Coll[0]["CNmType"]=== ("text" || "date" || "time")) ? "'"+ condGrp.Condition_Coll[0]["Value"] + "'" : condGrp.Condition_Coll[0]["Value"]) + ") ";
-            for (i = 1; i < condGrp.Condition_Coll.length; i++)
-                queryString += condGrp.operator + " (" + condGrp.Condition_Coll[i]["CName"] + " " + condGrp.Condition_Coll[i]["Operator"] + " " + ((condGrp.Condition_Coll[i]["CNmType"] === ("text" || "date" || "time")) ? "'" + condGrp.Condition_Coll[i]["Value"] + "'" : condGrp.Condition_Coll[i]["Value"]) + ") ";
-            //queryString += ")";
+            //((condGrp.Condition_Coll[0]["Operator"] === "BETWEEN") ? condGrp.Condition_Coll[0]["Value"] + "AND" + condGrp.Condition_Coll[0]["valueSec"] : condGrp.Condition_Coll[0]["Value"])
+            var cname = condGrp.Condition_Coll[0]["CName"];
+            var optr = condGrp.Condition_Coll[0]["Operator"];
+            var dataType = condGrp.Condition_Coll[0]["CNmType"];
+            var values = condGrp.Condition_Coll[0]["Value"];
+            var valueSec = condGrp.Condition_Coll[0]["valueSec"];
+            var queryString = "((" + cname + " " + optr + " " + ((dataType == "text" || dataType == "date" || dataType == "time") ? "'" + values + "'" : ((optr === "BETWEEN") ? values + " AND " + valueSec : values)) + ") ";
+            for (i = 1; i < condGrp.Condition_Coll.length; i++) {
+                var cName = condGrp.Condition_Coll[i]["CName"];
+                var Optr = condGrp.Condition_Coll[i]["Operator"];
+                var DataType = condGrp.Condition_Coll[i]["CNmType"];
+                var Values = condGrp.Condition_Coll[i]["Value"];
+                var ValueSec = condGrp.Condition_Coll[i]["valueSec"];
+                queryString += condGrp.operator + " (" + cName + " " + Optr + " " + ((DataType == "text" || DataType == "date" || DataType == "time") ? "'" + Values + "'" : ((Optr === "BETWEEN") ? Values + " AND " + ValueSec : Values)) + ") ";
+                //queryString += ")";
+            }
             return queryString;
         }
         return "";
@@ -545,10 +602,46 @@ var WhereBuilder = function (Queryobj) {
         $("#tables-cont").show();
     };
 
+    this.renderWhereCondOnEdit = function (editCond) {
+        if (editCond.hasOwnProperty('Condition_Coll')) {
+            for (var i = 0; i < editCond.Condition_Coll.length; i++) {
+                this.droploc_id = editCond.Condition_Coll[i].dropLocId;
+                this.droploc = $("#" + this.droploc_id);
+                this.columnName = editCond.Condition_Coll[i].CName;
+                this.onDropTabName = editCond.Condition_Coll[i].condTabName;
+                this.datatype = editCond.Condition_Coll[i].CNmType;
+                var editOperator = editCond.Condition_Coll[i].Operator;
+                var values = editCond.Condition_Coll[i].Value;
+                var condId = editCond.Condition_Coll[i].id;
+                var normalTextId = editCond.Condition_Coll[i].editNormalTextId;
+                var normalSelectId = editCond.Condition_Coll[i].editSelectId;
+                var boolTextId = editCond.Condition_Coll[i].boolTextId;
+                this.oncond(condId, normalTextId, normalSelectId, boolTextId, editOperator, values);
+            }
+
+        }
+        if (editCond.hasOwnProperty('ConditionGroup_Coll')) {
+            for (var k = 0; k < editCond.ConditionGroup_Coll.length; k++) {
+                this.locid = editCond.ConditionGroup_Coll[k].locId;
+                var objid = editCond.ConditionGroup_Coll[k].objids;
+                var bodyid = editCond.ConditionGroup_Coll[k].id;
+                var grpAndOrOptr = editCond.ConditionGroup_Coll[k].operator;
+                var grpBtnid = editCond.ConditionGroup_Coll[k].grpBtnid;
+                var appendDroploc = $("#" + this.locid);
+                this.appendGroupCondition(appendDroploc, objid, bodyid, grpBtnid);
+                $("body").on("click", "#" + grpBtnid, this.grpAndOrBtnFn.bind(this));
+                $("#" + grpBtnid).click();
+                if (editCond.ConditionGroup_Coll[k].hasOwnProperty('ConditionGroup_Coll'))
+                    this.renderWhereCondOnEdit(editCond.ConditionGroup_Coll[k]);
+            }
+        }
+    };
+
     this.init = function () {
         this.makeDroppable();
         $(".conditiong-gp-container .addGroup").off("click").on("click", this.addGroupCondition.bind(this));
-        this.WHEREclouseQ.id = "firstBody";    //add id into box
+        this.WHEREclouseQ.id = "firstBody";//add id into box
+        this.WHEREclouseQ.locId = "";
         this.WHEREclouseQ.operator = "OR";
         //this.queryDisplayObj = new QueryBuilder();
         $("body").on("click", ".conditionRemove", this.condRemoveFn.bind(this));
@@ -560,22 +653,17 @@ var WhereBuilder = function (Queryobj) {
         $("body").on("change", ".changeEventTextFn", this.changeEventTextFn.bind(this));
         $("body").on("change", ".selectOptr", this.condSelectOptrFn.bind(this));
         $("a[href='#Design']").on("click", this.designPaneFn.bind(this));
+        if (this.QueryObj.isNew) {
+        }
+        else {
+            this.renderWhereCondOnEdit(this.QueryObj.ObjectSchema.Conditions);
+        }        
     };
 
     this.init();
 }
 
-//this.createQueryForCondGroup = function (condGrp) {
-//    if (condGrp.Condition_Coll.length > 0) {
 
-//        var queryString = "((" + condGrp.Condition_Coll[0]["CName"] + " " + condGrp.Condition_Coll[0]["Operator"] + " " + condGrp.Condition_Coll[0]["Value"] + ") ";
-//        for (i = 1; i < condGrp.Condition_Coll.length; i++)
-//            queryString += condGrp.operator + " (" + condGrp.Condition_Coll[i]["CName"] + " " + condGrp.Condition_Coll[i]["Operator"] + " " + condGrp.Condition_Coll[i]["Value"] + ") ";
-//        //queryString += ")";
-//        return queryString;
-//    }
-//    return "";
-//};
 
 
 

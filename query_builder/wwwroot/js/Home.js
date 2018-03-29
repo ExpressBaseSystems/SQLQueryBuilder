@@ -1,11 +1,13 @@
 ﻿aliasarray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-var QueryBuilder = function (object)
+var QueryBuilder = function (object, editobject)
 {
     this.drawTree = false;
+    this.isNew = $.isEmptyObject(editobject) ? true : false;
     this.storeTableNames = [];
     this.dupTableNames = [];
     this.dragableArray = [];
     this.TableSchema = object;
+    this.ObjectSchema = this.isNew ? {} :editobject ;
     this.DesignPane = $(".DesignPane");
     this.SortPane = $(".SortPane");
     this.ConditionPane = $(".ConditionPane");
@@ -30,25 +32,26 @@ var QueryBuilder = function (object)
     this.tb = [];
 
     var QueryObject = function () {
-        this.TableCollection =  [];
-        this.QueryString= "";
-        this.Conditions = { };
+        this.TableCollection = [];
+        this.QueryString = "";
+        this.Conditions = {};
     };
 
-    this.tables = function () {  //Constructor
+    this.tables = function () {  
         this.id = "";
         this.tableName = "";
+        this.leftPos = "";
+        this.topPos = "";
         this.columns = [];
         this.aliasName = "";
     };
 
     this.appendDraggableTableNames = function () {
-        for (var key in this.TableSchema)
-        {
+        for (var key in this.TableSchema) {
             $("#tables-cont").append(`<ul class="treeview"><li class="dragable t-draggable" tname="${key}">${key}   
             </li></ul>`);
         }
-        
+
     };
 
     this.appendDragulaTableNames = function ()
@@ -89,29 +92,59 @@ var QueryBuilder = function (object)
         this.left = event.pageX - this.droploc.offset().left;
         this.top = event.pageY - this.droploc.offset().top;
         this.tableName = $(ui.draggable).attr('tname');
+        this.tableOnDropAppend();
+    };
+
+    this.tableOnDropAppend = function (objId)
+    {
+        this.IdCounters["TableCount"]++
+        if (objId === undefined || objId === null) 
+            this.objId = this.tableName + this.IdCounters["TableCount"]++;
+        else
+            this.objId = objId;
         this.objId = this.tableName + this.IdCounters["TableCount"]++;
         this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
                                 <div class="Table">
                                 <div id="tbhd_${this.tableName}">${this.tableName}</div>  
                                 <div id="col-container${this.objId}"></div></div>`);
         this.addColoums("col-container" + this.objId);
-        $("#" + this.objId).draggable({ containment: ".DesignPane" });
+        $("#" + this.objId).draggable({
+            containment: ".DesignPane",
+            stop: this.onDragStopFn.bind(this)
+        });
         this.tablesObj = new this.tables();
         this.tablesObj.tableName = this.tableName;
         this.tablesObj.id = this.objId;
         this.saveQueryObject.TableCollection.push(this.tablesObj);
+        for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
+            if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+                this.saveQueryObject["TableCollection"][i].leftPos = this.left;
+                this.saveQueryObject["TableCollection"][i].topPos = this.top;
+            }
+        }
         this.dupTableNames.push(this.tableName);
         for (var i = 0; i < this.dupTableNames.length; i++) {
-            if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1) 
+            if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1)
                 this.storeTableNames.push(this.dupTableNames[i]);
         }
-       
+    };
+
+    this.onDragStopFn = function (event, ui) {
+        var left = event.pageX - this.droploc.offset().left;
+        var top = event.pageY - this.droploc.offset().top;
+        var tagetId = $(event.target).attr("id");
+        for (var i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
+            if (this.saveQueryObject["TableCollection"][i].id === tagetId) {
+                this.saveQueryObject["TableCollection"][i].leftPos = left;
+                this.saveQueryObject["TableCollection"][i].topPos = top;
+            }
+        }
+
     };
 
     this.addColoums = function ($container) {
         this.treepusharray();
-        for (i = 0; i < this.TableSchema[this.tableName].length; i++)
-        {
+        for (var i = 0; i < this.TableSchema[this.tableName].length; i++) {
             this.keyId = "keyId" + this.IdCounters["TableCount"]++;
             this.item = this.TableSchema[this.tableName][i];
             $("#" + $container).append(`<div class="col form-inline" tabindex="1" id="${this.tableName}-col${i}" cnm="${this.item.cname}" datatp="${this.item.type}" con="${this.item.constraints}" fortnm="${this.item.foreign_tnm}" forcnm="${this.item.foreign_cnm}" >
@@ -120,13 +153,13 @@ var QueryBuilder = function (object)
                 <span>${this.item.type}</span>
                 <span><i class="fa fa-key" id="${this.keyId}" aria-hidden="true" style="display:none"></i></span></div>`);
             this.subtreeappend();
-            if (this.item.constraints === "PRIMARY KEY") 
+            if (this.item.constraints === "PRIMARY KEY")
                 $("#" + this.keyId).show();
         }
-       
+
         this.treeFunction();
         $('input[type="checkbox"]').on("click", this.get_parent.bind(this));
-        $(".col").on("focus", this.sortOrder.builderContextmenu);
+        //$(".col").on("focus", this.sortOrder.builderContextmenu);
     };
 
     this.treepusharray = function () {
@@ -162,12 +195,10 @@ var QueryBuilder = function (object)
         }
     };
 
-    this.whereClauseFn = function ()
-    {
+    this.whereClauseFn = function () {
         $("#tables-cont").hide();
         $(".treeviewDragula").show();
-        for (var key in this.storeTableNames)
-        {
+        for (var key in this.storeTableNames) {
             var tblName = this.storeTableNames[key];
             $("#treeview_" + tblName).show();
             if ($("#treeview_" + tblName).parent().parent().hasClass("treeview-tree")) {
@@ -190,55 +221,53 @@ var QueryBuilder = function (object)
 
     this.get_parent = function (event) {
         var obj = $(event.target).parent();
-        this.a = $(obj).parent().parent().siblings().text().trim();
-        this.b = $(obj).parent().parent().parent().parent().attr("id");
+        this.checkTabName = $(obj).parent().parent().siblings().text().trim();
+        this.checkTabId = $(obj).parent().parent().parent().parent().attr("id");
         var ida = $(obj).parent().parent().parent().parent().attr("id").substr(-1);
         this.r = [];
         if ($(event.target).prop("checked"))
         {
             if ($(obj).next().attr("id") === "ann")
             {
+                var str = $(obj).parent().parent().attr("id");
+                var substr = str.replace("col-container", "");
                 for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++)
                 {
-                    if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+                    if (this.saveQueryObject["TableCollection"][i].id === substr)
+                    {
                         this.saveQueryObject["TableCollection"][i].columns.push($(obj).next().text());
                     }
                 }
-                if (Object.keys(this.QueryDisply).indexOf(this.b) === -1)
-                {
+                if (Object.keys(this.QueryDisply).indexOf(this.checkTabId) === -1) {
                     this.r.push($(obj).next().text());
-                    this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
+                    this.QueryDisply[this.checkTabId] = new this.alias_name(this.r, aliasarray[ida]);
                     var aliasNm = aliasarray[ida];
                     for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-                        if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+                        if (this.saveQueryObject["TableCollection"][i].id === substr) {
                             this.saveQueryObject["TableCollection"][i].aliasName = aliasNm;
                         }
                     }
                 }
-                else
-                {
-                    $.each($("#col-container" + this.b).children(), function (i, ob)
-                    {
+                else {
+                    $.each($("#col-container" + this.checkTabId).children(), function (i, ob) {
                         if ($(ob).children().find("#mycheck").prop("checked")) {
                             this.r.push($(ob).children("#ann").text());
                         }
                     }.bind(this));
-                    this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
+                delete this.QueryDisply[this.checkTabId];
+                this.QueryDisply[this.checkTabId] = new this.alias_name(this.r, aliasarray[ida]);
                 }
             }
 
         }
-        else
-        {
-            for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++)
-            {
-                if (this.saveQueryObject["TableCollection"][i].id === this.objId)
-                {
-                  this.saveQueryObject["TableCollection"][i].columns.splice(i,1);
+        else {
+            for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
+                if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+                    this.saveQueryObject["TableCollection"][i].columns.splice(i, 1);
                 }
             }
-           
-            $.each($("#col-container" + this.b).children(), function (i, obe) {
+
+            $.each($("#col-container" + this.checkTabId).children(), function (i, obe) {
                 if ($(obe).children().find("#mycheck").prop("checked")) {
                     this.r.push($(obe).children("#ann").text());
                 }
@@ -246,12 +275,11 @@ var QueryBuilder = function (object)
 
             this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
             if (this.r.length === 0) {
-                delete this.QueryDisply[this.b];
+                delete this.QueryDisply[this.checkTabId];
             }
 
         }
-        if (Object.keys(this.QueryDisply).length !== 0)
-        {
+        if (Object.keys(this.QueryDisply).length !== 0) {
 
             var str = "SELECT";
             this.tb = [];
@@ -269,7 +297,7 @@ var QueryBuilder = function (object)
             });
             this.lateststr = str.substring(str.length - 1, -1);
             if (this.saveFormatString !== "") {
-                this.mergeString = this.lateststr + " " + "\n" + "\t" + "WHERE" + " " + this.saveFormatString;
+                this.mergeString = this.lateststr + " " + "\n" + "WHERE" + " " + this.saveFormatString;
                 this.saveQueryObject.QueryString = btoa(this.mergeString);
                 this.editor.setValue((`${this.mergeString}`).replace(/,\s*$/, ""));
             }
@@ -277,35 +305,40 @@ var QueryBuilder = function (object)
                 this.saveQueryObject.QueryString = btoa(this.lateststr);
                 this.editor.setValue((`${this.lateststr}`).replace(/,\s*$/, ""));
             }
-       }
+        }
         else
             this.editor.setValue("");
 
     };
 
     this.finalQueryFn = function (event) {
-
+        var temp = true;
         $(".keypressEventText").each(function (i, ob) {
-            if ($(ob).val().trim() === "")
+            if ($(ob).val().trim() === "") {
                 $("#saveError").html("please fill out fields").show().fadeOut("slow");
+                temp = false;
+            }
         });
         $(".changeEventTextFn").each(function (i, ob) {
-            if ($(ob).val().trim() === "")
+            if ($(ob).val().trim() === "") {
                 $("#saveError").html("please fill out fields").show().fadeOut("slow");
+                temp = false;
+            }
         });
-        var finalString = this.whereClauseObjects.recFinalQueryFn(this.whereClauseObjects.WHEREclouseQ);
-        this.saveFormatString = finalString.substr(1);
-        if (this.lateststr !== "") {
-            this.mergeString = this.lateststr + " "+ "\n" + "\t" + "WHERE" + " " + this.saveFormatString;
-        }
-        this.saveQueryObject.QueryString = btoa(this.mergeString);
-        this.editor.setValue((`${this.mergeString}`).replace(/,\s*$/, ""));
+       // if (temp) {
+            var finalString = this.whereClauseObjects.recFinalQueryFn(this.whereClauseObjects.WHEREclouseQ);
+            this.saveFormatString = finalString.substr(1);
+            if (this.lateststr !== "")
+                this.mergeString = this.lateststr + " " + "\n"+ "WHERE" + " " + this.saveFormatString;
+            this.saveQueryObject.QueryString = btoa(this.mergeString);
+            this.editor.setValue((`${this.mergeString}`).replace(/,\s*$/, ""));
+      //  }
     };
-    
 
-    this.saveQBFn = function () {
+    this.saveQBFn = function ()
+    {
         var str = JSON.stringify(this.saveQueryObject);
-             $.ajax({
+        $.ajax({
             type: 'POST',
             url: "../QB/selectClause",
             data: {
@@ -315,21 +348,36 @@ var QueryBuilder = function (object)
             success: function (data) {
                 $("#myModal").modal("toggle");
             }
-        });  
+        });
     };
 
-    this.init = function () {
-        this.saveQueryObject = new QueryObject();
+    this.renderTableOnEdit = function ()
+    {
+       for (var i = 0; i < this.ObjectSchema.TableCollection.length; i++) {
+            this.droploc = $("#designpane");
+            this.tableName = this.ObjectSchema.TableCollection[i]["tableName"];
+            this.dropObj = $(".treeview").children('[tname= '+this.tableName+']')
+            this.left = this.ObjectSchema.TableCollection[i]["leftPos"];
+            this.top = this.ObjectSchema.TableCollection[i]["topPos"];
+            var objId = this.ObjectSchema.TableCollection[i]["id"];
+            var tableAliasName = this.ObjectSchema.TableCollection[i]["aliasName"];
+            this.tableOnDropAppend(objId);
+        }
+    };
+
+    this.init = function ()
+    {
         this.appendDraggableTableNames();
         this.appendDragulaTableNames();
         this.makeDroppable();
+        this.saveQueryObject = new QueryObject();  
         this.sortOrder = new SqLsortOrder();
         this.whereClauseObjects = new WhereBuilder(this);
         this.saveQueryObject.Conditions = this.whereClauseObjects.WHEREclouseQ;
         $("a[href='#Condition']").on("click", this.whereClauseFn.bind(this));
         $("body").on("click", ".saveQuery", this.finalQueryFn.bind(this));
-        $("body").on("click", ".saveQB", this.saveQBFn.bind(this)); 
-       this.editor = new CodeMirror.fromTextArea(document.getElementById("QueryPane"),
+        $("body").on("click", ".saveQB", this.saveQBFn.bind(this));
+        this.editor = new CodeMirror.fromTextArea(document.getElementById("QueryPane"),
             {
                 mode: "text/x-pgsql",
                 lineNumbers: true,
@@ -339,9 +387,13 @@ var QueryBuilder = function (object)
                 foldGutter: { rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment) },
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
             });
-        //$("#modal_btnSave").on("click", this.saveQBFn.bind(this));
-        //$("#save_query_form").on("submit", this.callAjax.bind(this));
-        //$("#save_queryobj").on("click", this.saveQBFn.bind(this));
+        if (this.isNew)
+        {
+        }
+        else {
+            this.renderTableOnEdit();
+        }        
+        
     };
 
     this.init();
@@ -375,17 +427,3 @@ $.fn.extend({
         });
     }
 });
-
-
-
-   
-
-  
-
-   
-
-
-  
-   
-
-    
