@@ -629,8 +629,8 @@ var WhereBuilder = function (Queryobj) {
                 var grpBtnid = editCond.ConditionGroup_Coll[k].grpBtnid;
                 var appendDroploc = $("#" + this.locid);
                 this.appendGroupCondition(appendDroploc, objid, bodyid, grpBtnid);
-                $("body").on("click", "#" + grpBtnid, this.grpAndOrBtnFn.bind(this));
-                $("#" + grpBtnid).click();
+                $("body").on("click", "#" + grpBtnid, this.grpAndOrBtnFn.bind(this, grpAndOrOptr));
+                $("#" + grpBtnid).children('[value='+grpAndOrOptr+']').click();
                 if (editCond.ConditionGroup_Coll[k].hasOwnProperty('ConditionGroup_Coll'))
                     this.renderWhereCondOnEdit(editCond.ConditionGroup_Coll[k]);
             }
