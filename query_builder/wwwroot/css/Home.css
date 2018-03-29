@@ -20,12 +20,6 @@
     height: 100%;
 }
 
-.sortfunction {
-    height: auto;
-    border: 5px solid BLUE;
-    float: right;
-}
-
 g {
    stroke-opacity: 0.5;
     stroke-width: 5px;
@@ -33,6 +27,12 @@ g {
 }
 
 /*sorting..........................................................*/
+.sortfunction {
+    height: auto;
+    border: 5px solid BLUE;
+    float: right;
+    /*width: auto;*/
+}
 .sortorder {
     border: 5px solid #DDD;
     height: inherit;
@@ -42,6 +42,31 @@ g {
     border: 2px solid black;
     width: auto;
 }
+.adad {
+    margin-right: 1px;
+    position: absolute;
+    right: 0;
+}
+.btn1 {
+    padding: initial;
+    margin-right: 30px;
+    margin-top: 1px;
+    position: absolute;
+    right: 0;
+    background-color: transparent;
+    border: none;
+}
+
+/*.btn1 {
+    padding-left:20px;
+    margin-right: 1px;
+    margin-top: 1px;
+    
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    border: none;
+}*/
 /*builder tab custom css*/
 .nav-tabs {
     border-bottom: 2px solid #DDD;
@@ -102,20 +127,47 @@ g {
     display: inline-block;
     /*position: absolute;*/
     margin: auto;
-    border: 1px solid black;
-    padding: 5px;
+    border: 1px solid blue;
+    /*padding: 5px;*/
+
 }
 
 #tbhd {
     text-align: center;
     border-bottom: 1px solid black;
+   
 }
-
+.headtb {
+    background-color: lightblue;
+}
+.tablebody {
+    padding: 5px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: static;
+    outline: none;
+    border: 0 !important;
+    width: 150px;
+    height: 120px;
+}
 .col > .fa fa-sort {
     background-size: 10px 10px;
     background-repeat: no-repeat;
     background-position: right;
 }
+/*close button*/
+.btn0 {
+    padding: initial;
+    margin-right: 1px;
+    margin-top: 1px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    border: none;
+}
+/*}*/
+
 /*tree..........................*/
 div.treeview {
     min-width: 100px;
