@@ -141,10 +141,10 @@
                     }
 
                     //Get Left point and Right Point
-                    _left.x = $(option.left_node).offset().left + $(option.left_node).outerWidth() - 240;
-                    _left.y = $(option.left_node).offset().top + ($(option.left_node).outerHeight() / 2) - 100 + 20;
-                    _right.x = $(option.right_node).offset().left - 238;
-                    _right.y = $(option.right_node).offset().top + ($(option.right_node).outerHeight() / 2) - 100 + 20;
+                    _left.x = $(option.left_node).offset().left + $(option.left_node).outerWidth() - 320;
+                    _left.y = $(option.left_node).offset().top + ($(option.left_node).outerHeight() / 2) - 110 ;
+                    _right.x = $(option.right_node).offset().left - 330;
+                    _right.y = $(option.right_node).offset().top + ($(option.right_node).outerHeight() / 2) - 110 ;
 
                     //Create a group
                     var g = _svg.group({ strokeWidth: 2, strokeDashArray: _dash, id: id = counter, left: id = option.left_node, right: id = option.right_node });

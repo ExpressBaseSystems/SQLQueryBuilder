@@ -43,26 +43,29 @@
     console.log(databaseObject);
 </script>
 <body>
+    <section class="topbar">
+        <div class="container-fluid">
+            <div class="row h_toolbar">
+                <button type="button" class="btn pull-right" data-target="#myModal" data-toggle="modal"><i class="glyphicon glyphicon-floppy-saved"></i></button>
+            </div>
+        </div>
+    </section>
     <div class="container-fluid builder-window">
         <div class="row builder-window-row">
             <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 Builder-toolbox">
-                <button type="button" class="btn btn-xs btn-success" data-target="#myModal" data-toggle="modal">SAVE</button>
-                <br />
-                <br />
-                <br />
                 <div id="tables-cont"></div>
                 <ul id="column-cont"></ul>
                 <div id="dragula-tables-cont"></div>
                 <ul id="dragula-column-cont"></ul>
             </div>
-            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12 Builder-work-pane pd-0">
+            <div class="col-lg-10 col-md-offset-2 col-lg-offset-2 col-sm-offset-2 col-md-10 col-sm-10 col-xs-12 Builder-work-pane pd-0">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="active"><a href="#Design" aria-controls="home" role="tab" data-toggle="tab">Design</a></li>
                     <li><a href="#Condition" aria-controls="Condition" role="tab" data-toggle="tab">Condition</a></li>
                     <li><a href="#Query" aria-controls="Query" role="tab" data-toggle="tab">Query</a></li>
                 </ul>
                 <!-- Tab panes -->
-                <div class="tab-content">
+                <div class="tab-content tabs">
                     <div class="tab-pane active De" id="Design">
                         <div class="DesignPane drop" id="designpane" style="height:700px;width:100%">
 
@@ -74,12 +77,12 @@
                     <div class="tab-pane condition-tab" id="Condition">
                         <div class="conditiong-gp-container" id="groupBox0">
                             <div class="ConditionPanes-header conditiong-gp-container-header form-inline">
-                                <div class="btn-group btn-toggle where-toggle">
+                                <div class="btn-group btn-toggle where-toggle" id="grpBtnId00">
                                     <button class="btn btn-sm btn-default grpAndOrBtn" value="AND">AND</button>
                                     <button class="btn btn-sm btn-default grpAndOrBtn active" value="OR">OR</button>
                                 </div>
                                 <div class="pull-right" id="saveError"></div>
-                                <div class="btn-group where-btns pull-right rule-actions">
+                                <div class="btn-group where-btns pull-right">
                                     <button type="button" data-counter="0" class="btn btn-xs btn-success where-btn2 addGroup" id="group0"><i class="glyphicon glyphicon-plus-sign"></i>Group</button>
                                     <button type="button" class="btn btn-xs btn-success saveQuery">SAVE</button>
                                 </div>
