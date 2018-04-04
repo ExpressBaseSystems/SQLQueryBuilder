@@ -154,77 +154,41 @@ var QueryBuilder = function (object, editobject) {
             if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1)
                 this.storeTableNames.push(this.dupTableNames[i]);
         }
-
+        this.Qdisply();
     };
 
     this.removTable = function (event) {
         
         this.tableName = $(event.target).closest('button').attr("t");
         $($(event.target).closest('.Table').parent()).remove();
-
-        // this.Qdisply();$($(event.target).closest('.Table').parent()).attr("id").slice(0, -1);$(event.target).closest("#tbhd_" + this.tableName).text().trim()
-        this.mySVG.redrawLines();
         for (key in this.ForGrp) {
             if (this.tableName === this.ForGrp[key].fortnames || this.tableName === this.ForGrp[key].tables) {
                 delete this.ForGrp[key];
-
-
-                //if (key == this.firstvar) {
-                //    $.each(this.ForGrp, function (ke, obj) {
-                //        if (this.ForGrp.hasOwnProperty(ke)) {
-                //            this.firstvar = ke;
-                //            return false;
-                //        }
-                //        if (Object.keys(this.ForGrp).length - 1 === parseInt(ke))
-                //            this.Qdisply();
-                //    }.bind(this));
-                //}
-                //else
-                //    if (Object.keys(this.ForGrp).length - 1 === parseInt(key))
-                        //this.Qdisply();
-
-
             }
         }
-       
         //this.array.pop(this.tableName);
-        for (var i = this.array.length - 1; i >= 0; i--) {
-            if (this.array[i] === this.tableName) {
-                this.array.splice(i, 1);
+        var flag = true;
+        var $tables = $(".DesignPane .table-container .Table");
+        for (var ii = 0; ii < $tables.length; ii++) {
+            if ($($($tables[ii]).children()[0]).text().trim() === this.tableName){
+                flag = false;
             }
         }
 
+        if (flag) {
+            for (var i = this.array.length - 1; i >= 0; i--) {
+                if (this.array[i] === this.tableName) {
+                    this.array.splice(i, 1);
+                }
+            }
+        }
+        
+        this.mySVG.redrawLines();
         this.Qdisply();
         
     };
 
-    //this.tableOnDropAppend = function () {
-    //    this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
-    //                            <div class="Table">
-    //                            <div id="tbhd_${this.tableName}">${this.tableName}</div>  
-    //                            <div id="col-container${this.objId}"></div></div>`);
-    //    this.addColoums("col-container" + this.objId);
-    //    $("#" + this.objId).draggable({
-    //        containment: ".DesignPane",
-    //        stop: this.onDragStopFn.bind(this)
-    //    });
-    //    this.tablesObj = new this.tables();
-    //    this.tablesObj.tableName = this.tableName;
-    //    this.tablesObj.id = this.objId;
-    //    this.saveQueryObject.TableCollection.push(this.tablesObj);
-    //    for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-    //        if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
-    //            this.saveQueryObject["TableCollection"][i].leftPos = this.left;
-    //            this.saveQueryObject["TableCollection"][i].topPos = this.top;
-    //        }
-    //    }
-    //    this.dupTableNames.push(this.tableName);
-    //    for (var i = 0; i < this.dupTableNames.length; i++) {
-    //        if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1)
-    //            this.storeTableNames.push(this.dupTableNames[i]);
-    //    }
-    //};//.......
-
+   
     this.onDragStopFn = function (event, ui) {
         var left = event.pageX - this.droploc.offset().left;
         var top = event.pageY - this.droploc.offset().top;
@@ -256,7 +220,7 @@ var QueryBuilder = function (object, editobject) {
 
         this.treeFunction();
         this.foreignConstruct();
-        $('input[type="checkbox"]').on("click", this.get_parent.bind(this));
+        $('input[type="checkbox"]').off("click").on("click", this.get_parent.bind(this));
         $(".col").on("focus", this.sortOrder.builderContextmenu);
         this.makeDroppableColumn();
     };
@@ -299,7 +263,7 @@ var QueryBuilder = function (object, editobject) {
             for (k = 0; k < this.array.length; k++) {
                 var colCollection = this.TableSchema[this.array[k]];
                 for (i = 0; i < colCollection.length; i++) {
-                    if (this.array.indexOf(colCollection[i].foreign_tnm) > -1 && (colCollection[i].foreign_tnm === this.tableName || this.array[k] === this.tableName)) {
+                    if (this.array.indexOf(colCollection[i].foreign_tnm) > -1 && (colCollection[i].foreign_tnm === this.tableName || this.array[k] === this.tableName) &&(this.array[this.array.length-1] === this.tableName)) {
 
                         var fortname = colCollection[i].foreign_tnm;
                         var forcname = colCollection[i].foreign_cnm;
@@ -469,18 +433,6 @@ var QueryBuilder = function (object, editobject) {
             }
         }
 
-
-
-
-
-        //var obj = {};
-        //var k = 0;
-        //$.each(this.ForGrp, function (a, ob) {
-        //    obj[k] = ob;
-        //    k++;
-        //});
-        //this.ForGrp = obj;
-
         $(".context-menu-active").remove();
         this.Qdisply();
     };
@@ -573,11 +525,11 @@ var QueryBuilder = function (object, editobject) {
                     this.r.push($(obj).next().text());
                     this.QueryDisply[this.b] = new this.check_items(this.r, [ida]);
                     
-                    for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-                        if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
-                            this.saveQueryObject["TableCollection"][i].aliasName = ida;
-                        }
-                    }
+                    //for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
+                    //    if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
+                    //        this.saveQueryObject["TableCollection"][i].aliasName = ida;
+                    //    }
+                    //}
                 }
                  else 
                 {
@@ -629,10 +581,10 @@ var QueryBuilder = function (object, editobject) {
 
 
         var str = this.JoinQuery(this.ForGrp);
-        if (this.array.length === 1){
-            this.editor.setValue("SELECT * FROM" + " " + this.array);//this.array.length === 1
-        }
-       else if ((str == "") && (Object.keys(this.QueryDisply).length !== 0)) {
+           if ((str == "") && (Object.keys(this.QueryDisply).length === 0)) {
+    this.editor.setValue("SELECT * FROM" + " " + this.array);
+}
+      if ((str == "") && (Object.keys(this.QueryDisply).length !== 0)) {
             var str = "SELECT \n";
             this.tb = [];
             $.each(this.QueryDisply, function (key, value) {
@@ -650,15 +602,19 @@ var QueryBuilder = function (object, editobject) {
             this.lateststr = str.replace(/,\s*$/, "");
             this.finalQueryFn();
             var sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
-            if ((this.saveFormatString !== "") && (sortstr !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
+            if (this.array.length === 1)
+                this.editor.setValue(this.lateststr);//this.array.length === 1"SELECT * FROM" + " " + this.array
+        
+           else if ((this.saveFormatString !== "") && (sortstr !== ""))
+                this.editor.setValue(this.lateststr + " " + "\n"  + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
             else if (this.saveFormatString !== "")
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + " " + "WHERE" + " " + this.saveFormatString + "\n");
+                this.editor.setValue(this.lateststr + " " + "\n"  + " " + "WHERE" + " " + this.saveFormatString + "\n");
             else if (sortstr !== "")
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + " " + "ORDER BY" + " " + sortstr);
+                this.editor.setValue(this.lateststr + " " + "\n"  + " " + "ORDER BY" + " " + sortstr);
             else
                 this.editor.setValue(this.lateststr);
-        }
+      }
+    
         else if (Object.keys(this.QueryDisply).length !== 0) {
             var str = "SELECT \n";
             this.tb = [];
@@ -675,23 +631,25 @@ var QueryBuilder = function (object, editobject) {
             this.finalQueryFn();
             str = this.JoinQuery(this.ForGrp);
             var sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
-            if ((str !== "") && (this.saveFormatString !== "") && (sortstr !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
+            if (this.array.length === 1)
+                this.editor.setValue(this.lateststr);
+          else if ((str !== "") && (this.saveFormatString !== "") && (sortstr !== ""))
+                this.editor.setValue(this.lateststr + " " + "\n"  + str + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
             else if ((this.saveFormatString !== "") && (str !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str + " " + "WHERE" + " " + this.saveFormatString + "\n");
+                this.editor.setValue(this.lateststr + " " + "\n"  + str + " " + "WHERE" + " " + this.saveFormatString + "\n");
             else if ((sortstr !== "") && (str !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str + " " + "ORDER BY" + " " + sortstr);
+                this.editor.setValue(this.lateststr + " " + "\n" + str + " " + "ORDER BY" + " " + sortstr);
             //else if (this.array !== "")
             //    this.editor.setValue("SELECT * FROM" + " " + this.array[0]);
             else
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str);
+                this.editor.setValue(this.lateststr + " " + "\n"  + str);
 
         }
-        //else if ((str == "") && (Object.keys(this.QueryDisply).length === 0)) {
-        //    this.editor.setValue("SELECT * FROM" + " " + this.array);
-        //}
-        
-        else {
+   
+      //else if (this.array.length === 1) {
+      //    this.editor.setValue("SELECT * FROM" + " " + this.array);//this.array.length === 1
+      //}
+      else if ((Object.keys(this.QueryDisply).length === 0)){
             sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
             str = this.JoinQuery(this.ForGrp);
             if ((str !== "") && (this.saveFormatString !== "") && (sortstr !== ""))
@@ -707,7 +665,7 @@ var QueryBuilder = function (object, editobject) {
             //else if (this.saveFormatString !== "")
             //    this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str  /*+ "ORDER BY"+" "+ sortstr*/);
         }
-
+        
     }
  
     this.finalQueryFn = function (event) {
