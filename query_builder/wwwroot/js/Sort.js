@@ -82,6 +82,14 @@
 
     this.removFunc = function (event) {
         this.columnName = $(event.target).closest(".sortbox").text().trim();
+        for(key in this.SorGrp){
+            if (this.SorGrp[key].colNamesorder === this.columnName)
+                delete this.SorGrp[key];
+        }
+
+
+
+        //delete this.SorGrp[$(event.target).closest(".sortbox").index()];
 
         var str = $(event.target).closest(".sortbox").attr("id");
         var splits = str.split("-");
@@ -95,7 +103,7 @@
         $('.sortbox_' + this.columnName).remove();
         //this.SorGrp[this.s].colNamesorder.remove();
         //this.sorfun.colNamesorder.pop(this.columnName);
-        delete this.SorGrp[this.s].colNamesorder;
+        
     };
     this.makeDroppablesort = function () {
         $(".dragables").draggable({
