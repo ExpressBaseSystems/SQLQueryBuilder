@@ -1,4 +1,4 @@
-﻿//aliasarray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+﻿
 var join = function (l, r, act) {
     this.leftnode = l;
     this.rightnode = r;
@@ -39,8 +39,9 @@ var QueryBuilder = function (object, editobject) {
     this.lateststr = "";
     this.mergeString = "";
     this.saveFormatString = "";
-    this.alias_name = function (a, b) {
+    this.check_items = function (a, b) {
         this.r = a;
+        this.table = b;
     };
     this.query = [];
     this.tb = [];
@@ -130,8 +131,8 @@ var QueryBuilder = function (object, editobject) {
             this.objId = this.tableName + this.IdCounters["TableCount"];
         else
             this.objId = objId;
-        this.objId = this.tableName + this.IdCounters["TableCount"];
-        this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
+        this.objId = this.tableName + this.IdCounters["TableCount"]++;
+        this.droploc.append(`<div class="table-container table-${this.tableName}" tn="${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
                                 <div class="Table">
                                 <div class="headtb" id="tbhd_${this.tableName}">${this.tableName}
                                 <button class="btn0" t="${this.tableName}">
@@ -161,9 +162,9 @@ var QueryBuilder = function (object, editobject) {
     };
 
     this.removTable = function (event) {
-
-        $($(event.target).closest('.Table').parent()).remove();
+        
         this.tableName = $(event.target).closest('button').attr("t");
+        $($(event.target).closest('.Table').parent()).remove();
 
         // this.Qdisply();$($(event.target).closest('.Table').parent()).attr("id").slice(0, -1);$(event.target).closest("#tbhd_" + this.tableName).text().trim()
         this.mySVG.redrawLines();
@@ -172,16 +173,16 @@ var QueryBuilder = function (object, editobject) {
                 delete this.ForGrp[key];
 
 
-                if (key == this.firstvar) {
-                    $.each(this.ForGrp, function (ke, obj) {
-                        if (this.ForGrp.hasOwnProperty(ke)) {
-                            this.firstvar = ke;
-                            return false;
-                        }
-                        if (Object.keys(this.ForGrp).length - 1 === parseInt(ke))
-                            this.Qdisply();
-                    }.bind(this));
-                }
+                //if (key == this.firstvar) {
+                //    $.each(this.ForGrp, function (ke, obj) {
+                //        if (this.ForGrp.hasOwnProperty(ke)) {
+                //            this.firstvar = ke;
+                //            return false;
+                //        }
+                //        if (Object.keys(this.ForGrp).length - 1 === parseInt(ke))
+                //            this.Qdisply();
+                //    }.bind(this));
+                //}
                 //else
                 //    if (Object.keys(this.ForGrp).length - 1 === parseInt(key))
                 //this.Qdisply();
@@ -189,9 +190,16 @@ var QueryBuilder = function (object, editobject) {
 
             }
         }
-        this.Qdisply();
-        this.array.pop(this.tableName);
+       
+        //this.array.pop(this.tableName);
+        for (var i = this.array.length - 1; i >= 0; i--) {
+            if (this.array[i] === this.tableName) {
+                this.array.splice(i, 1);
+            }
+        }
 
+        this.Qdisply();
+        
     };
 
     this.onDragStopFn = function (event, ui) {
@@ -530,8 +538,9 @@ var QueryBuilder = function (object, editobject) {
         var obj = $(event.target).parent();
         var checkID = $(obj).children().attr("id");
         this.a = $(obj).parent().parent().siblings().text().trim();
-        this.b = $(obj).parent().parent().parent().parent().attr("id");
-        var ida = $(obj).parent().parent().parent().parent().attr("id");
+        this.b = $(obj).parent().parent().parent().parent().attr("tn");
+       // this.c = $(obj).parent().parent().parent().parent().attr("tn");
+        var ida = $(obj).parent().parent().parent().parent().attr("tn");
         this.r = [];
         if ($(event.target).prop("checked")) {
             if ($(obj).next().attr("id") === "ann") {
@@ -561,7 +570,7 @@ var QueryBuilder = function (object, editobject) {
                             this.r.push($(ob).children("#ann").text());
                         }
                     }.bind(this));
-                    this.QueryDisply[this.b] = new this.alias_name(this.r);
+                    this.QueryDisply[this.b] = new this.check_items(this.r, [ida]);
                 }
             }
 
@@ -582,7 +591,7 @@ var QueryBuilder = function (object, editobject) {
                 }
             }.bind(this));
 
-            this.QueryDisply[this.b] = new this.alias_name(this.r);
+            this.QueryDisply[this.b] = new this.check_items(this.r, [ida]);
             if (this.r.length === 0) {
                 delete this.QueryDisply[this.b];
             }
@@ -594,14 +603,25 @@ var QueryBuilder = function (object, editobject) {
     };
 
     this.Qdisply = function () {
+
+        $.each(this.ForGrp, function (kk, obj) {
+            if (this.ForGrp.hasOwnProperty(kk)) {
+                this.firstvar = kk;
+                return false;
+            }
+        }.bind(this));
+
+
         var str = this.JoinQuery(this.ForGrp);
-        if ((str == "") && (Object.keys(this.QueryDisply).length !== 0)) {
-            //  var str = this.JoinQuery(this.ForGrp);
+        if (this.array.length === 1){
+            this.editor.setValue("SELECT * FROM" + " " + this.array);//this.array.length === 1
+        }
+       else if ((str == "") && (Object.keys(this.QueryDisply).length !== 0)) {
             var str = "SELECT \n";
             this.tb = [];
             $.each(this.QueryDisply, function (key, value) {
-                var updateKey = key.substring(key.length - 1, -1);
-                this.tb.push(key);// str += ` ${value.alias}.${ob} ,`;
+                var updateKey = key;
+                this.tb.push(key);
                 $.each(value.r, function (i, ob) {
                     str += ` ${updateKey}.${ob} , \n`;
                 });
@@ -609,13 +629,10 @@ var QueryBuilder = function (object, editobject) {
             str = str.replace(/,\s*$/, "");
             str += "\n FROM";
             $.each(this.QueryDisply, function (key, value) {
-                var updateKey = key.substring(key.length - 1, -1);
-                str += ` ${updateKey}, \n`;//.........
+                str += `  ${value.table}, \n`;
             });
-            this.lateststr = str;
-            this.lateststr = str.substring(str.length - 1, -1);
-            //this.finalQueryFn();
-            // str = this.JoinQuery(this.ForGrp);
+            this.lateststr = str.replace(/,\s*$/, "");
+            this.finalQueryFn();
             var sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
             if ((this.saveFormatString !== "") && (sortstr !== ""))
                 this.editor.setValue(this.lateststr + " " + "\n" + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
@@ -627,25 +644,21 @@ var QueryBuilder = function (object, editobject) {
                 this.editor.setValue(this.lateststr);
         }
         else if (Object.keys(this.QueryDisply).length !== 0) {
-            //  var str = this.JoinQuery(this.ForGrp);
             var str = "SELECT \n";
             this.tb = [];
             $.each(this.QueryDisply, function (key, value) {
-                var updateKey = key.substring(key.length - 1, -1);
-                this.tb.push(key);// str += ` ${value.alias}.${ob} ,`;
+                var updateKey = key;
+                this.tb.push(key);
                 $.each(value.r, function (i, ob) {
                     str += ` ${updateKey}.${ob} , \n`;
                 });
             }.bind(this));
             str = str.replace(/,\s*$/, "");
-            str += "\n FROM" + " " + this.ForGrp[this.firstvar].tables + "\n";
-            //$.each(this.QueryDisply, function (key, value) {
-            //    var updateKey = key.substring(key.length - 1, -1);
-            //    str += ` ${updateKey} ${value.alias},`;//.........
-            //});
+            str += "\n FROM" + " " + this.ForGrp[this.firstvar].tables+"\n" ;
             this.lateststr = str;
             //this.lateststr = str.substring(str.length - 1, -1);
             // this.finalQueryFn();
+            this.finalQueryFn();
             str = this.JoinQuery(this.ForGrp);
             var sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
             if ((str !== "") && (this.saveFormatString !== "") && (sortstr !== ""))
@@ -653,12 +666,17 @@ var QueryBuilder = function (object, editobject) {
             else if ((this.saveFormatString !== "") && (str !== ""))
                 this.editor.setValue(this.lateststr + " " + "\n" + str + " " + "WHERE" + " " + this.saveFormatString + "\n");
             else if ((sortstr !== "") && (str !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + str + " " + "ORDER BY" + " " + sortstr);
+                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str + " " + "ORDER BY" + " " + sortstr);
+            //else if (this.array !== "")
+            //    this.editor.setValue("SELECT * FROM" + " " + this.array[0]);
             else
                 this.editor.setValue(this.lateststr + " " + "\n" + str);
 
         }
-
+        //else if ((str == "") && (Object.keys(this.QueryDisply).length === 0)) {
+        //    this.editor.setValue("SELECT * FROM" + " " + this.array);
+        //}
+        
         else {
             sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
             str = this.JoinQuery(this.ForGrp);
@@ -670,6 +688,8 @@ var QueryBuilder = function (object, editobject) {
                 this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str + " " + "ORDER BY" + " " + sortstr);
             else if (str !== "")
                 this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str  /*+ "ORDER BY"+" "+ sortstr*/);
+            //else if (this.array !== "")
+            //    this.editor.setValue("SELECT * FROM" + " " + this.array[0]);
             //else if (this.saveFormatString !== "")
             //    this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str  /*+ "ORDER BY"+" "+ sortstr*/);
         }
