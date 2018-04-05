@@ -131,7 +131,7 @@ var QueryBuilder = function (object, editobject) {
             this.objId = this.tableName + this.IdCounters["TableCount"];
         else
             this.objId = objId;
-        this.objId = this.tableName + this.IdCounters["TableCount"]++;
+        this.objId = this.tableName + this.IdCounters["TableCount"];
         this.droploc.append(`<div class="table-container table-${this.tableName}" tn="${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
                                 <div class="Table">
                                 <div class="headtb" id="tbhd_${this.tableName}">${this.tableName}
@@ -158,7 +158,7 @@ var QueryBuilder = function (object, editobject) {
             if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1)
                 this.storeTableNames.push(this.dupTableNames[i]);
         }
-
+        this.Qdisply();
     };
 
     this.removTable = function (event) {
@@ -539,7 +539,7 @@ var QueryBuilder = function (object, editobject) {
         var checkID = $(obj).children().attr("id");
         this.a = $(obj).parent().parent().siblings().text().trim();
         this.b = $(obj).parent().parent().parent().parent().attr("tn");
-       // this.c = $(obj).parent().parent().parent().parent().attr("tn");
+       
         var ida = $(obj).parent().parent().parent().parent().attr("tn");
         this.r = [];
         if ($(event.target).prop("checked")) {
@@ -556,16 +556,10 @@ var QueryBuilder = function (object, editobject) {
                 }
                 if (Object.keys(this.QueryDisply).indexOf(this.b) === -1) {
                     this.r.push($(obj).next().text());
-                    this.QueryDisply[this.b] = new this.alias_name(this.r);
-                    //var aliasNm = aliasarray[ida];
-                    //for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-                    //    if (this.saveQueryObject["TableCollection"][i].id === substr) {
-                    //        this.saveQueryObject["TableCollection"][i].aliasName = aliasNm;
-                    //    }
-                    //}
+                    this.QueryDisply[this.b] = new this.check_items(this.r, [ida]);
                 }
                 else {
-                    $.each($("#col-container" + this.b).children(), function (i, ob) {
+                    $.each($(".table-" + this.b).children().children().next().children(), function (i, ob) {
                         if ($(ob).children().eq(0).children().prop("checked")) {
                             this.r.push($(ob).children("#ann").text());
                         }
@@ -585,7 +579,7 @@ var QueryBuilder = function (object, editobject) {
             }
             
 
-            $.each($("#col-container" + this.b).children(), function (i, ob) {
+            $.each($(".table-" + this.b).children().children().next().children(), function (i, ob) {
                 if ($(ob).children().eq(0).children().prop("checked")) {
                     this.r.push($(ob).children("#ann").text());
                 }
@@ -613,10 +607,10 @@ var QueryBuilder = function (object, editobject) {
 
 
         var str = this.JoinQuery(this.ForGrp);
-        if (this.array.length === 1){
-            this.editor.setValue("SELECT * FROM" + " " + this.array);//this.array.length === 1
+        if ((str == "") && (Object.keys(this.QueryDisply).length === 0)){
+            this.editor.setValue("SELECT * FROM" + " " + this.array);
         }
-       else if ((str == "") && (Object.keys(this.QueryDisply).length !== 0)) {
+            if ((str == "") && (Object.keys(this.QueryDisply).length !== 0)) {
             var str = "SELECT \n";
             this.tb = [];
             $.each(this.QueryDisply, function (key, value) {
@@ -632,14 +626,13 @@ var QueryBuilder = function (object, editobject) {
                 str += `  ${value.table}, \n`;
             });
             this.lateststr = str.replace(/,\s*$/, "");
-            this.finalQueryFn();
             var sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
             if ((this.saveFormatString !== "") && (sortstr !== ""))
                 this.editor.setValue(this.lateststr + " " + "\n" + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
             else if (this.saveFormatString !== "")
                 this.editor.setValue(this.lateststr + " " + "\n" + " " + "WHERE" + " " + this.saveFormatString + "\n");
             else if (sortstr !== "")
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + " " + "ORDER BY" + " " + sortstr);
+                this.editor.setValue(this.lateststr + " " + "\n" + " " + "ORDER BY" + " " + sortstr);
             else
                 this.editor.setValue(this.lateststr);
         }
@@ -656,9 +649,6 @@ var QueryBuilder = function (object, editobject) {
             str = str.replace(/,\s*$/, "");
             str += "\n FROM" + " " + this.ForGrp[this.firstvar].tables+"\n" ;
             this.lateststr = str;
-            //this.lateststr = str.substring(str.length - 1, -1);
-            // this.finalQueryFn();
-            this.finalQueryFn();
             str = this.JoinQuery(this.ForGrp);
             var sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
             if ((str !== "") && (this.saveFormatString !== "") && (sortstr !== ""))
@@ -666,7 +656,7 @@ var QueryBuilder = function (object, editobject) {
             else if ((this.saveFormatString !== "") && (str !== ""))
                 this.editor.setValue(this.lateststr + " " + "\n" + str + " " + "WHERE" + " " + this.saveFormatString + "\n");
             else if ((sortstr !== "") && (str !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str + " " + "ORDER BY" + " " + sortstr);
+                this.editor.setValue(this.lateststr + " " + "\n" + str + " " + "ORDER BY" + " " + sortstr);
             //else if (this.array !== "")
             //    this.editor.setValue("SELECT * FROM" + " " + this.array[0]);
             else
@@ -688,10 +678,7 @@ var QueryBuilder = function (object, editobject) {
                 this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str + " " + "ORDER BY" + " " + sortstr);
             else if (str !== "")
                 this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str  /*+ "ORDER BY"+" "+ sortstr*/);
-            //else if (this.array !== "")
-            //    this.editor.setValue("SELECT * FROM" + " " + this.array[0]);
-            //else if (this.saveFormatString !== "")
-            //    this.editor.setValue("SELECT * \n FROM " + " " + this.ForGrp[this.firstvar].tables + "\n" + " " + str  /*+ "ORDER BY"+" "+ sortstr*/);
+           
         }
 
     }
