@@ -16,12 +16,11 @@ var WhereBuilder = function (Queryobj) {
     this.columnName = [];
     this.drawTree = false;
     this.drake = null;
-    this.date = ["=", "!="];
+    this.date = ["=", "!=", "BETWEEN"];
     this.integer = ["=", ">", "<=", ">=", "<", "!=", "BETWEEN"];
-    this.real = ["=", ">", "<=", ">=", "<", "!="];
     this.text = ["=", "!=", "Like"];
     this.boolean = ["=", "=!"];
-    this.time = ["=", "=!"];
+    this.time = ["=", "=!", "BETWEEN"];
     this.groupCounter = 0;
     this.arraycol = [];
     this.ConditionPane = $(".conditiong-gp-container");
@@ -49,29 +48,29 @@ var WhereBuilder = function (Queryobj) {
         this.dropLocId = "";
         this.CNmType = "";
         this.Operator = "";
-        this.Value = "";
+        this.Value = " ";
         this.valueSec = "";
         this.editNormalTextId = "";
+        this.normalTextIdSec = "";
         this.editSelectId = "";
         this.boolTextId = "";
+        this.boolTextIdSec = "";
     };
 
     this.WHEREclouseQ = new this.ConditionGroup();
-    
-    this.makeDroppable = function ($storeTableNames)
-    {
+
+    this.makeDroppable = function ($storeTableNames) {
         this.storedNames = $storeTableNames;
-        if (this.drake === null)
-        {
-        this.drake = new dragula([document.getElementById("firstBody")], {
-            copy: function (el, source) {
-                return (el.className === 'col-draggable');
-            },
-            accepts: this.acceptFn.bind(this)
+        if (this.drake === null) {
+            this.drake = new dragula([document.getElementById("firstBody")], {
+                copy: function (el, source) {
+                    return (el.className === 'col-draggable');
+                },
+                accepts: this.acceptFn.bind(this)
             });
 
-        this.drake.on("drop", this.tableOnDrop.bind(this));
-        this.drake.on("drag", this.tableOnDrag.bind(this));
+            this.drake.on("drop", this.tableOnDrop.bind(this));
+            this.drake.on("drag", this.tableOnDrag.bind(this));
         }
         for (var key in this.storedNames) {
             var tblName = this.storedNames[key];
@@ -81,7 +80,7 @@ var WhereBuilder = function (Queryobj) {
 
     this.acceptFn = function (el, target, source, sibling) {
 
-       if ($(target).attr("class") === "cols-cont")
+        if ($(target).attr("class") === "cols-cont")
             return false;
         else
             return true;
@@ -147,8 +146,10 @@ var WhereBuilder = function (Queryobj) {
     };
 
     this.pushCollCondRec = function (condGrp, destinatn, dropObjid) {
-        if (condGrp.id === destinatn)
+        if (condGrp.id === destinatn) {
+            this.movingItem.dropLocId = condGrp.id;
             condGrp.Condition_Coll.push(this.movingItem)
+        }
         else {
             if (condGrp.hasOwnProperty('ConditionGroup_Coll')) {
                 for (var k = 0; k < condGrp.ConditionGroup_Coll.length; k++)
@@ -188,7 +189,7 @@ var WhereBuilder = function (Queryobj) {
             var grpBtnid = "grpBtnId" + this.groupCounter;
         }
         else
-           this.bodyid = bodyid;
+            this.bodyid = bodyid;
         appendloc.append(`<div class="groupBox"  id= "${objid}" >
                             <div class=" conditiong-gp-container-header form-inline">
                                 <div class="btn-group btn-toggle where-toggle" id="${grpBtnid}">
@@ -277,28 +278,29 @@ var WhereBuilder = function (Queryobj) {
         }
     };
 
-    this.oncond = function (condId, normalTextId, normalSelectId, boolTextId, editOperator, values) {
+    this.oncond = function (condId, normalTextId, normalSelectId, boolTextId, boolTextIdSec, editOperator, values, valueSec, normalTextIdSec) {
         this.IdCounters["TableCount"]++
         if (normalSelectId === undefined || normalSelectId === null) {
-            this.condId = this.columnName + this.IdCounters["TableCount"]++;
-            var normalTextId = "normalTextId" + this.IdCounters["TableCount"]++;
-            var normalSelectId = "normalSelectId" + this.IdCounters["TableCount"]++;
-            var normalTextIdSec = "normalTextIdSec" + this.IdCounters["TableCount"]++;
-            var boolTextId = "boolTextId" + this.IdCounters["TableCount"]++;
+            this.condId = this.columnName + this.IdCounters["TableCount"];
+            var normalTextId = "normalTextId" + this.IdCounters["TableCount"];
+            var normalSelectId = "normalSelectId" + this.IdCounters["TableCount"];
+            var normalTextIdSec = "normalTextIdSec" + this.IdCounters["TableCount"];
+            var boolTextId = "boolTextId" + this.IdCounters["TableCount"];
+            var boolTextIdSec = "boolTextIdSec" + this.IdCounters["TableCount"];
         }
-        else 
+        else
             this.condId = condId;
-           
+
         this.droploc.append(`<div class="droped form-inline" id="${this.condId}">
                                 <div class="d-inline columnName" dataType = "${this.datatype}">${this.columnName}</div>
-                                <select flatObjId="${this.condId}" class="form-control d-inline selectOptr" id=${normalSelectId} ></select>
-                                <button class="btn btn-default pull-right conditionEdit"  style="display:none;"><i class="fa fa-edit fa-lg"></i></button>
-                                <button flatObjId="${this.condId}" class="btn btn-default pull-right conditionCheck"><i class="fa fa-check fa-lg"></i></button>
-                                <button class="btn btn-default pull-right conditionRemove"><i class="fa fa-close fa-lg"></i></button>
+                                <select flatObjId="${this.condId}" class="form-control d-inline clr selectOptr" id=${normalSelectId} ></select>
+                                <button class="btn btn-default pull-right conditionEdit clr"  style="display:none;"><i class="fa fa-edit fa-lg"></i></button>
+                                <button flatObjId="${this.condId}" class="btn btn-default pull-right conditionCheck clr"><i class="fa fa-check fa-lg"></i></button>
+                                <button class="btn btn-default pull-right conditionRemove clr"><i class="fa fa-close fa-lg"></i></button>
                               </div>`);
-
-        this.datatype_check(this.condId, normalTextId, boolTextId, normalTextIdSec);
         this.cond = new this.Condition(); //new condition created
+        this.datatype_check(this.condId, normalTextId, boolTextId, normalTextIdSec, boolTextIdSec);
+
         //if (!this.QueryObj.isNew) {
         //    $("#" + this.normalTextId).val(this.values);
         //    $("#" + this.normalSelectId+ "option:selected").val(this.editOperator);
@@ -310,42 +312,51 @@ var WhereBuilder = function (Queryobj) {
         this.cond.CName = this.columnName;
         this.cond.dropLocId = this.droploc_id;
         this.cond.editNormalTextId = normalTextId;
+        this.cond.normalTextIdSec = normalTextIdSec;
         this.cond.editSelectId = normalSelectId;
         this.cond.boolTextId = boolTextId;
+        this.cond.boolTextIdSec = boolTextIdSec;
+
         $("#" + normalSelectId + " option[value= '" + editOperator + "']").attr("selected", true)
         $("#" + boolTextId + " option[value= '" + editOperator + "']").attr("selected", true)
-        this.cond.Operator  = $("#" + normalSelectId).find("option:selected").text()
+        this.cond.Operator = $("#" + normalSelectId).find("option:selected").text()
+        if (editOperator === "BETWEEN") {
+            $("#" + normalTextIdSec).show();
+            $("#" + normalTextIdSec).val(valueSec);
+            $("#" + boolTextIdSec).val(valueSec);
+            this.cond.valueSec = valueSec || "";
+        }
         $("#" + normalTextId).val(values);
         $("#" + boolTextId).val(values);
-        this.cond.Value = values;
+        this.cond.Value = values || "";
         this.condFlatObj[this.condId] = this.cond;
 
-        if (this.droploc_id === "firstBody") 
+        if (this.droploc_id === "firstBody")
             this.WHEREclouseQ.Condition_Coll.push(this.cond);
-        else 
+        else
             this.recCond(this.WHEREclouseQ.ConditionGroup_Coll);
     };
 
-    this.datatype_check = function ($container, normalTextId, boolTextId, normalTextIdSec) {
+    this.datatype_check = function ($container, normalTextId, boolTextId, normalTextIdSec, boolTextIdSec) {
         if (this.datatype === "text") {
-            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline keypressEventText"  id = "${normalTextId}">`);
+            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control clr d-inline keypressEventText"  id = "${normalTextId}">`);
             this.loopcheck(this.text, $container);
         }
         else if (this.datatype === "integer") {
-            $("#" + this.condId + " select").after(`<input type="text" flatObjId="${this.condId}" data-identity = "firstTextBox" class="form-control d-inline keypressEventText"  id = "${normalTextId}"><input type="text" flatObjId="${this.condId}"  data-identity = "secTextBox" class="form-control d-inline keypressEventText"  id = "${normalTextIdSec}" style ="display:none">`);
+            $("#" + this.condId + " select").after(`<input type="text" flatObjId="${this.condId}" data-identity = "firstTextBox" class="form-control clr d-inline keypressEventText"  id = "${normalTextId}"><input type="text" flatObjId="${this.condId}"  data-identity = "secTextBox" class="form-control clr betweenText betweenInt"  id = "${normalTextIdSec}" style ="display:none">`);
             this.loopcheck(this.integer, $container);
 
         }
         else if (this.datatype === "date") {
-            $("#" + this.condId + " select").after(` <input type="date" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${boolTextId}"/>`)
+            $("#" + this.condId + " select").after(` <input type="date" flatObjId="${this.condId}" data-identity = "firstTextBox" class="form-control clr d-inline changeEventTextFn"  id = "${boolTextId}"/><input type="date" flatObjId="${this.condId}" class="form-control clr betweenText betweenDateTime"  id = "${boolTextIdSec}" style ="display:none"/>`)
             this.loopcheck(this.date, $container);
         }
-      else if (this.datatype === "boolean") {
-            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${boolTextId}">`)
+        else if (this.datatype === "boolean") {
+            $("#" + this.condId + " select").after(` <input type="text" flatObjId="${this.condId}" class="form-control clr d-inline changeEventTextFn"  id = "${boolTextId}">`)
             this.loopcheck(this.boolean, $container);
         }
         else if (this.datatype === "time") {
-            $("#" + this.condId + " select").after(` <input type="time" flatObjId="${this.condId}" class="form-control d-inline changeEventTextFn"  id = "${boolTextId}"/>`)
+            $("#" + this.condId + " select").after(` <input type="time" flatObjId="${this.condId}"  data-identity = "firstTextBox" class="form-control clr d-inline changeEventTextFn"  id = "${boolTextId}"/> <input type="time" flatObjId="${this.condId}" class="form-control clr betweenText betweenDateTime"  id = "${boolTextIdSec}" style ="display:none"/>`)
             this.loopcheck(this.time, $container);
         }
     };
@@ -371,7 +382,8 @@ var WhereBuilder = function (Queryobj) {
     this.condCheckFn = function (event) {
         var colName;
         var optr;
-        var text
+        var text;
+        var textBw
         var $el = $(event.target).closest(".btn");
         droploc = $(event.target).closest(".btn").parent();
 
@@ -380,11 +392,20 @@ var WhereBuilder = function (Queryobj) {
             if (condObjId === key) {
                 colName = this.condFlatObj[key].CName;
                 optr = this.condFlatObj[key].Operator;
-                text = this.condFlatObj[key].Value;
+                if (optr === "BETWEEN") {
+                    textBw = this.condFlatObj[key].valueSec;
+                    text = this.condFlatObj[key].Value;
+                }
+                else
+                    text = this.condFlatObj[key].Value;
             }
         }
-        var string = colName + " " + optr + " " + text;
+        if (optr === "BETWEEN")
+            var string = colName + " " + optr + " " + text + " " + "AND" + " " + textBw;
+        else
+            var string = colName + " " + optr + " " + text;
         $el.siblings(".d-inline").hide()
+        $el.siblings(".betweenText").hide();
         $el.hide()
         $el.siblings(".conditionEdit").show()
         droploc.prepend(`<label class="checkText">${string}</label>`);
@@ -395,105 +416,31 @@ var WhereBuilder = function (Queryobj) {
         $el.hide();
         $el.siblings(".checkText").hide();
         $el.siblings(".conditionCheck").show();
-        $el.siblings(".d-inline").show();
+        if ($el.siblings(".selectOptr").val() === "BETWEEN") {
+            $el.siblings(".d-inline").show();
+            $el.siblings(".betweenText").show();
+        }
+        else
+            $el.siblings(".d-inline").show();
     };
 
     this.keypressEventTextFn = function (event) {
-        var cont = $(event.target).val() + window.event.key;
-        var $el = $(event.target);
-        var condDataType = $el.siblings(".columnName").attr("dataType");
-        var condObjId = $el.attr("flatObjId");
+        var condDataType = $(event.target).siblings(".columnName").attr("dataType");
+        var charCode = event.which;
         if (condDataType === "text") {
-
-
-            try {
-
-                if (window.event) {
-
-                    var charCode = window.event.keyCode;
-
-                }
-
-                else if (e) {
-
-                    var charCode = e.which;
-
-                }
-
-                else {
-                    return true;
-                }
-
-                if ((charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123) || (charCode === 37) || (charCode === 95)) {
-                    for (var key in this.condFlatObj) {
-                        if (condObjId === key) {
-                            this.condFlatObj[key].Value =cont;
-                        }
-                    }
-                }
-
-
-
-                else {
-                    
-                    return false;
-                }
+            if ((charCode > 64 && charCode < 91) || (charCode > 96 && charCode < 123) || (charCode === 37) || (charCode === 95)) {
+                return true;
             }
-
-            catch (err) {
-
-                alert(err.Description);
-
+            else {
+                return false;
             }
-
-
         }
         else if (condDataType == "integer") {
-
-
-            try {
-
-                if (window.event) {
-
-                    var charCode = window.event.keyCode;
-
-                }
-
-                else if (e) {
-
-                    var charCode = e.which;
-
-                }
-
-                else { return true; }
-
-                if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-                    return false;
-                }
-                else {
-                    for (var key in this.condFlatObj)
-                    {
-                        if (condObjId === key)
-                        {
-                            if (this.condFlatObj[key].Operator === "BETWEEN")
-                            {
-                                if ($el.attr("data-identity") === "firstTextBox")
-                                    this.condFlatObj[key].Value = cont;
-                                else
-                                    this.condFlatObj[key].valueSec = cont;
-                            } 
-                            else
-                                this.condFlatObj[key].Value = cont;
-                        }
-                    }
-                }
-
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
             }
-
-            catch (err) {
-
-                alert(err.Description);
-
+            else {
+                return true;
             }
         }
 
@@ -525,14 +472,28 @@ var WhereBuilder = function (Queryobj) {
         else if (condDataType == "date") {
             for (let key in this.condFlatObj) {
                 if (condObjId === key) {
-                    this.condFlatObj[key].Value =con;
+                    if (this.condFlatObj[key].Operator === "BETWEEN") {
+                        if ($el.attr("data-identity") === "firstTextBox")
+                            this.condFlatObj[key].Value = con;
+                        else
+                            this.condFlatObj[key].valueSec = con;
+                    }
+                    else
+                        this.condFlatObj[key].Value = con;
                 }
             }
         }
         else if (condDataType === "time") {
             for (let key in this.condFlatObj) {
                 if (condObjId === key) {
-                    this.condFlatObj[key].Value = con;
+                    if (this.condFlatObj[key].Operator === "BETWEEN") {
+                        if ($el.attr("data-identity") === "firstTextBox")
+                            this.condFlatObj[key].Value = con;
+                        else
+                            this.condFlatObj[key].valueSec = con;
+                    }
+                    else
+                        this.condFlatObj[key].Value = con;
                 }
             }
         }
@@ -542,7 +503,7 @@ var WhereBuilder = function (Queryobj) {
         var optionSelected = $(event.target).find("option:selected");
         var optionText = optionSelected.text();
         var $el = $(event.target);
-       
+
         var condObjId = $el.attr("flatobjid");
         for (let key in this.condFlatObj) {
             if (condObjId === key) {
@@ -571,14 +532,14 @@ var WhereBuilder = function (Queryobj) {
             var dataType = condGrp.Condition_Coll[0]["CNmType"];
             var values = condGrp.Condition_Coll[0]["Value"];
             var valueSec = condGrp.Condition_Coll[0]["valueSec"];
-            var queryString = "((" + cname + " " + optr + " " + ((dataType == "text" || dataType == "date" || dataType == "time") ? "'" + values + "'" : ((optr === "BETWEEN") ? values + " AND " + valueSec : values)) + ") ";
+            var queryString = "((" + cname + " " + optr + " " + ((dataType === "text" || dataType === "date" || dataType === "time") ? ((optr === "BETWEEN") ? "'" + values + "' AND '" + valueSec + "'" : "'" + values + "'") : ((optr === "BETWEEN") ? values + " AND " + valueSec : values)) + ") ";
             for (i = 1; i < condGrp.Condition_Coll.length; i++) {
                 var cName = condGrp.Condition_Coll[i]["CName"];
                 var Optr = condGrp.Condition_Coll[i]["Operator"];
                 var DataType = condGrp.Condition_Coll[i]["CNmType"];
                 var Values = condGrp.Condition_Coll[i]["Value"];
                 var ValueSec = condGrp.Condition_Coll[i]["valueSec"];
-                queryString += condGrp.operator + " (" + cName + " " + Optr + " " + ((DataType == "text" || DataType == "date" || DataType == "time") ? "'" + Values + "'" : ((Optr === "BETWEEN") ? Values + " AND " + ValueSec : Values)) + ") ";
+                queryString += condGrp.operator + " (" + cName + " " + Optr + " " + ((DataType === "text" || DataType === "date" || DataType === "time") ? ((Optr === "BETWEEN") ? "'" + Values + "' AND '" + ValueSec + "'" : "'" + Values + "'") : ((Optr === "BETWEEN") ? Values + " AND " + ValueSec : Values)) + ") ";
                 //queryString += ")";
             }
             return queryString;
@@ -603,6 +564,10 @@ var WhereBuilder = function (Queryobj) {
     };
 
     this.renderWhereCondOnEdit = function (editCond) {
+        var grpBtnidM = editCond.grpBtnid;
+        var grpAndOrOptrM = editCond.operator;
+        $("body").on("click", "#" + grpBtnidM, this.grpAndOrBtnFn.bind(this, grpAndOrOptrM));
+        $("#" + grpBtnidM).children('[value=' + grpAndOrOptrM + ']').click();
         if (editCond.hasOwnProperty('Condition_Coll')) {
             for (var i = 0; i < editCond.Condition_Coll.length; i++) {
                 this.droploc_id = editCond.Condition_Coll[i].dropLocId;
@@ -612,11 +577,15 @@ var WhereBuilder = function (Queryobj) {
                 this.datatype = editCond.Condition_Coll[i].CNmType;
                 var editOperator = editCond.Condition_Coll[i].Operator;
                 var values = editCond.Condition_Coll[i].Value;
+                if (editOperator === "BETWEEN")
+                    var valueSec = editCond.Condition_Coll[i].valueSec;
                 var condId = editCond.Condition_Coll[i].id;
                 var normalTextId = editCond.Condition_Coll[i].editNormalTextId;
+                var normalTextIdSec = editCond.Condition_Coll[i].normalTextIdSec;
                 var normalSelectId = editCond.Condition_Coll[i].editSelectId;
+                var boolTextIdSec = editCond.Condition_Coll[i].boolTextIdSec;
                 var boolTextId = editCond.Condition_Coll[i].boolTextId;
-                this.oncond(condId, normalTextId, normalSelectId, boolTextId, editOperator, values);
+                this.oncond(condId, normalTextId, normalSelectId, boolTextId, boolTextIdSec, editOperator, values, valueSec, normalTextIdSec);
             }
 
         }
@@ -630,38 +599,42 @@ var WhereBuilder = function (Queryobj) {
                 var appendDroploc = $("#" + this.locid);
                 this.appendGroupCondition(appendDroploc, objid, bodyid, grpBtnid);
                 $("body").on("click", "#" + grpBtnid, this.grpAndOrBtnFn.bind(this, grpAndOrOptr));
-                $("#" + grpBtnid).children('[value='+grpAndOrOptr+']').click();
+                $("#" + grpBtnid).children('[value=' + grpAndOrOptr + ']').click();
                 if (editCond.ConditionGroup_Coll[k].hasOwnProperty('ConditionGroup_Coll'))
                     this.renderWhereCondOnEdit(editCond.ConditionGroup_Coll[k]);
             }
         }
+
+
     };
 
     this.init = function () {
         this.makeDroppable();
         $(".conditiong-gp-container .addGroup").off("click").on("click", this.addGroupCondition.bind(this));
         this.WHEREclouseQ.id = "firstBody";//add id into box
-        this.WHEREclouseQ.locId = "";
         this.WHEREclouseQ.operator = "OR";
+        this.WHEREclouseQ.grpBtnid = "grpBtnId00";
         //this.queryDisplayObj = new QueryBuilder();
         $("body").on("click", ".conditionRemove", this.condRemoveFn.bind(this));
         $("body").on("click", ".groupRemove", this.grpRemoveFn.bind(this));
         $("body").on("click", ".conditionCheck", this.condCheckFn.bind(this));
         $("body").on("click", ".conditionEdit", this.condEditFn.bind(this));
         $("body").on("click", ".grpAndOrBtn", this.grpAndOrBtnFn.bind(this));
-        $("body").on("keypress", ".keypressEventText", this.keypressEventTextFn.bind(this));
-        $("body").on("change", ".changeEventTextFn", this.changeEventTextFn.bind(this));
+        $("body").on("keypress", ".keypressEventText,.betweenInt", this.keypressEventTextFn.bind(this));
+        $("body").on("change", ".changeEventTextFn,.betweenDateTime", this.changeEventTextFn.bind(this));
         $("body").on("change", ".selectOptr", this.condSelectOptrFn.bind(this));
         $("a[href='#Design']").on("click", this.designPaneFn.bind(this));
         if (this.QueryObj.isNew) {
         }
         else {
             this.renderWhereCondOnEdit(this.QueryObj.ObjectSchema.Conditions);
-        }        
+            //$("body").on("click", ".saveQuery", this.QueryObj.finalQueryFn.bind(this));
+            //$(".saveQuery").click();
+        }
     };
 
     this.init();
-}
+};
 
 
 

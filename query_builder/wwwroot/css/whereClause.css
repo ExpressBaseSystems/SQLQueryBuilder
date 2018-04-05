@@ -23,7 +23,7 @@
 
 .conditiong-gp-container {
     width: 100%;
-    border: 1px solid yellow;
+    border: 1px solid #2682dd;
     border-radius: 10px;
     padding: 15px;
 }
@@ -41,7 +41,7 @@
 
 .groupBox {
     width: 100%;
-    border: 1px solid yellow;
+    border: 1px solid #2682dd;
     border-radius: 10px;
     min-height: 50px;
     margin-bottom: 10px;
@@ -49,12 +49,13 @@
 
 .droped {
     width: 100%;
-    border: 1px solid yellow;
+    border: 1px solid #2682dd;
     border-radius: 10px;
     min-height: 50px;
     margin-bottom: 10px;
     margin-left: 1px;
     padding: 10px;
+    color: #369;
 }
 
 .where-btns {
@@ -72,6 +73,8 @@
 .d-inline {
     display: inline-block;
 }
+
+/************************/
 div.treeviewDragula {
     min-width: 100px;
     min-height: 100px;
@@ -83,34 +86,28 @@ div.treeviewDragula {
     border: solid 1px;
     border-radius: 4px;
 }
-.cols-cont {
-    list-style: none;
-    padding: 0;
-   
-}
 
-div.treeviewDragula ul:first-child:before {
-    display: none;
-}
+    div.treeviewDragula ul:first-child:before {
+        display: none;
+    }
 
-.treeviewDragula, .treeview ul {
+.treeviewDragula, .treeviewDragula ul {
     margin: 0;
     padding: 0;
     list-style: none;
     color: #369;
 }
 
-.treeviewDragula ul {
+    .treeviewDragula ul {
         margin-left: 1em;
         position: relative
-}
+    }
 
-.treeviewDragula ul ul {
+        .treeviewDragula ul ul {
             margin-left: .5em
+        }
 
-}
-
- .treeviewDragula ul:before {
+        .treeviewDragula ul:before {
             content: "";
             display: block;
             width: 0;
@@ -120,17 +117,17 @@ div.treeviewDragula ul:first-child:before {
             border-left: 1px solid;
             /*creates: a more theme-ready standard for the bootstrap themes;*/
             bottom: 15px;
-}
+        }
 
- .treeviewDragula li {
+    .treeviewDragula li {
         margin: 0;
-        padding: 0 1em;
+        padding: 2px 1em;
         line-height: 2em;
-        font-weight: 700;
-        position: relative
-}
+        position: relative;
+        font-size: 16px;
+    }
 
-.treeviewDragula ul li:before {
+    .treeviewDragula ul li:before {
         content: "";
         display: block;
         width: 10px;
@@ -140,14 +137,20 @@ div.treeviewDragula ul:first-child:before {
         position: absolute;
         top: 1em;
         left: 0
+    }
+
+.tree-indicator {
+    margin-right: 5px;
+    cursor: pointer;
 }
+
 .treeviewDragula li a {
     text-decoration: none;
     color: inherit;
     cursor: pointer;
 }
 
-.treeviewDragula li button, .treeviewDragula li button:active, .treeviewDragula li button:focus {
+.treeview li button, .treeviewDragula li button:active, .treeviewDragula li button:focus {
     text-decoration: none;
     color: inherit;
     border: none;
@@ -156,3 +159,10 @@ div.treeviewDragula ul:first-child:before {
     padding: 0px 0px 0px 0px;
     outline: 0;
 }
+.clr {
+    color: #369;
+}
+/*.where-btn2 {
+    background-color: #369;
+}*/
+

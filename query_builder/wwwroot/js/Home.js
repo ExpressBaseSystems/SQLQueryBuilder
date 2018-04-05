@@ -1,4 +1,4 @@
-﻿aliasarray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+﻿//aliasarray = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
 var join = function (l, r, act) {
     this.leftnode = l;
     this.rightnode = r;
@@ -41,7 +41,6 @@ var QueryBuilder = function (object, editobject) {
     this.saveFormatString = "";
     this.alias_name = function (a, b) {
         this.r = a;
-        this.alias = b;
     };
     this.query = [];
     this.tb = [];
@@ -53,13 +52,18 @@ var QueryBuilder = function (object, editobject) {
         this.Conditions = {};
     };
 
-    this.tables = function () {  
+    this.tables = function () {
         this.id = "";
         this.tableName = "";
         this.leftPos = "";
         this.topPos = "";
-        this.columns = [];
+        this.columnsColl = [];
         this.aliasName = "";
+    };
+
+    this.columns = function () {
+        this.colNameStore = "";
+        this.checkIdStore = "";
     };
 
     this.ForGrp = {};
@@ -120,14 +124,13 @@ var QueryBuilder = function (object, editobject) {
         this.tableOnDropAppend();
     };
 
-    this.tableOnDropAppend = function (objId)
-    {
+    this.tableOnDropAppend = function (objId) {
         this.IdCounters["TableCount"]++
-        if (objId === undefined || objId === null) 
-            this.objId = this.tableName + this.IdCounters["TableCount"]++;
+        if (objId === undefined || objId === null)
+            this.objId = this.tableName + this.IdCounters["TableCount"];
         else
             this.objId = objId;
-        this.objId = this.tableName + this.IdCounters["TableCount"]++;
+        this.objId = this.tableName + this.IdCounters["TableCount"];
         this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
                                 <div class="Table">
                                 <div class="headtb" id="tbhd_${this.tableName}">${this.tableName}
@@ -181,7 +184,7 @@ var QueryBuilder = function (object, editobject) {
                 }
                 //else
                 //    if (Object.keys(this.ForGrp).length - 1 === parseInt(key))
-                        //this.Qdisply();
+                //this.Qdisply();
 
 
             }
@@ -190,33 +193,6 @@ var QueryBuilder = function (object, editobject) {
         this.array.pop(this.tableName);
 
     };
-
-    //this.tableOnDropAppend = function () {
-    //    this.droploc.append(`<div class="table-container table-${this.tableName}" id="${this.objId}" style="position:absolute;top:${this.top};left:${this.left};">
-    //                            <div class="Table">
-    //                            <div id="tbhd_${this.tableName}">${this.tableName}</div>  
-    //                            <div id="col-container${this.objId}"></div></div>`);
-    //    this.addColoums("col-container" + this.objId);
-    //    $("#" + this.objId).draggable({
-    //        containment: ".DesignPane",
-    //        stop: this.onDragStopFn.bind(this)
-    //    });
-    //    this.tablesObj = new this.tables();
-    //    this.tablesObj.tableName = this.tableName;
-    //    this.tablesObj.id = this.objId;
-    //    this.saveQueryObject.TableCollection.push(this.tablesObj);
-    //    for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-    //        if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
-    //            this.saveQueryObject["TableCollection"][i].leftPos = this.left;
-    //            this.saveQueryObject["TableCollection"][i].topPos = this.top;
-    //        }
-    //    }
-    //    this.dupTableNames.push(this.tableName);
-    //    for (var i = 0; i < this.dupTableNames.length; i++) {
-    //        if (this.storeTableNames.indexOf(this.dupTableNames[i]) === -1)
-    //            this.storeTableNames.push(this.dupTableNames[i]);
-    //    }
-    //};//.......
 
     this.onDragStopFn = function (event, ui) {
         var left = event.pageX - this.droploc.offset().left;
@@ -229,16 +205,22 @@ var QueryBuilder = function (object, editobject) {
             }
         }
 
-    }//....
-
+    };
 
     this.addColoums = function ($container) {
         this.treepusharray();
         for (i = 0; i < this.TableSchema[this.tableName].length; i++) {
-            this.keyId = "keyId" + this.IdCounters["TableCount"]++;
+            // this.IdCounters["TableCount"]++
+            //if (checkId === undefined || checkId === null)
+            //this.checkId = this.objId + "checkId";
+            //else
+            //  this.checkId = checkId;
+
             this.item = this.TableSchema[this.tableName][i];
+            this.checkId = this.objId + "-" + this.item.cname + "-" + "checkId";
+            this.keyId = this.objId + "-" + this.item.cname + "-" + "keyid";
             $("#" + $container).append(`<div class="col form-inline" tabindex="1" id="${this.tableName}-col${i}" cnm="${this.item.cname}" datatp="${this.item.type}" con="${this.item.constraints}" fortnm="${this.item.foreign_tnm}" forcnm="${this.item.foreign_cnm}" >
-                <span><input type="checkbox" id="mycheck" class="checkBoxClass" /></span>
+                <span><input type="checkbox" id="${this.checkId}" class="checkBoxClass" /></span>
                 <span id="ann">${this.item.cname}</span>
                 <span>${this.item.type}</span>
                 <span><i class="fa fa-key" id="${this.keyId}" aria-hidden="true" style="display:none"></i></span></div>`);
@@ -249,8 +231,8 @@ var QueryBuilder = function (object, editobject) {
 
         this.treeFunction();
         this.foreignConstruct();
-        $('input[type="checkbox"]').on("click", this.get_parent.bind(this));
-        $(".col").on("focus", this.sortOrder.builderContextmenu);
+        $('.checkBoxClass').off("click").on("click", this.get_parent.bind(this));
+        $(".col").off("focus").on("focus", this.sortOrder.builderContextmenu);
         this.makeDroppableColumn();
     };
 
@@ -489,7 +471,7 @@ var QueryBuilder = function (object, editobject) {
             }
             else {
                 joinTnames.push(ForGrp[j].fortnames);
-               
+
                 this.isRepeated = false;
                 $.each(ForGrp, function (i, obj) {
                     if (i < parseInt(j)) {
@@ -517,10 +499,6 @@ var QueryBuilder = function (object, editobject) {
         return QString;
     };
 
-    //this.isRepeated = function () {
-
-    //};
-
     this.whereClauseFn = function () {
 
         $("#tables-cont").hide();
@@ -543,62 +521,68 @@ var QueryBuilder = function (object, editobject) {
             });
             this.drawDTree = false;
         }
-        this.Qdisply();
+
         this.whereClauseObjects.makeDroppable(this.storeTableNames);
 
     };
 
     this.get_parent = function (event) {
         var obj = $(event.target).parent();
+        var checkID = $(obj).children().attr("id");
         this.a = $(obj).parent().parent().siblings().text().trim();
         this.b = $(obj).parent().parent().parent().parent().attr("id");
-        var ida = $(obj).parent().parent().parent().parent().attr("id").substr(-1);
+        var ida = $(obj).parent().parent().parent().parent().attr("id");
         this.r = [];
         if ($(event.target).prop("checked")) {
             if ($(obj).next().attr("id") === "ann") {
-                for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-                    if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
-                        this.saveQueryObject["TableCollection"][i].columns.push($(obj).next().text());
+                var str = $(obj).parent().parent().attr("id");
+                var substr = str.replace("col-container", "");
+                for (var i = 0; i < this.saveQueryObject.TableCollection.length; i++) {
+                    if (this.saveQueryObject.TableCollection[i].id === substr) {
+                        this.colObj = new this.columns();
+                        this.colObj.colNameStore = $(obj).next().text();
+                        this.colObj.checkIdStore = $(obj).children().attr("id");
+                        this.saveQueryObject.TableCollection[i].columnsColl.push(this.colObj);
                     }
                 }
                 if (Object.keys(this.QueryDisply).indexOf(this.b) === -1) {
                     this.r.push($(obj).next().text());
-                    this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
-                    var aliasNm = aliasarray[ida];
-                    for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
-                        if (this.saveQueryObject["TableCollection"][i].id === this.objId) {
-                            this.saveQueryObject["TableCollection"][i].aliasName = aliasNm;
-                        }
-                    }
+                    this.QueryDisply[this.b] = new this.alias_name(this.r);
+                    //var aliasNm = aliasarray[ida];
+                    //for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++) {
+                    //    if (this.saveQueryObject["TableCollection"][i].id === substr) {
+                    //        this.saveQueryObject["TableCollection"][i].aliasName = aliasNm;
+                    //    }
+                    //}
                 }
                 else {
                     $.each($("#col-container" + this.b).children(), function (i, ob) {
-                        if ($(ob).children().find("#mycheck").prop("checked")) {
+                        if ($(ob).children().eq(0).children().prop("checked")) {
                             this.r.push($(ob).children("#ann").text());
                         }
                     }.bind(this));
-                    this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
+                    this.QueryDisply[this.b] = new this.alias_name(this.r);
                 }
             }
 
         }
-        else
-        {
-            for (i = 0; i < this.saveQueryObject["TableCollection"].length; i++)
-            {
-                if (this.saveQueryObject["TableCollection"][i].id === this.objId)
-                {
-                  this.saveQueryObject["TableCollection"][i].columns.splice(i,1);
+        else {
+            for (var i = 0; i < this.saveQueryObject.TableCollection.length; i++) {
+                for (var j = 0; j < this.saveQueryObject.TableCollection[i].columnsColl.length; j++) {
+                    if (this.saveQueryObject.TableCollection[i].columnsColl[j].checkIdStore === checkID) {
+                        this.saveQueryObject.TableCollection[i].columnsColl.splice(j,1);
+                    }
                 }
             }
+            
 
-            $.each($("#col-container" + this.b).children(), function (i, obe) {
-                if ($(obe).children().find("#mycheck").prop("checked")) {
-                    this.r.push($(obe).children("#ann").text());
+            $.each($("#col-container" + this.b).children(), function (i, ob) {
+                if ($(ob).children().eq(0).children().prop("checked")) {
+                    this.r.push($(ob).children("#ann").text());
                 }
             }.bind(this));
 
-            this.QueryDisply[this.b] = new this.alias_name(this.r, aliasarray[ida]);
+            this.QueryDisply[this.b] = new this.alias_name(this.r);
             if (this.r.length === 0) {
                 delete this.QueryDisply[this.b];
             }
@@ -626,17 +610,17 @@ var QueryBuilder = function (object, editobject) {
             str += "\n FROM";
             $.each(this.QueryDisply, function (key, value) {
                 var updateKey = key.substring(key.length - 1, -1);
-                str += ` ${updateKey} ${value.alias}, \n`;//.........
+                str += ` ${updateKey}, \n`;//.........
             });
             this.lateststr = str;
             this.lateststr = str.substring(str.length - 1, -1);
-            this.finalQueryFn();
+            //this.finalQueryFn();
             // str = this.JoinQuery(this.ForGrp);
             var sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
             if ((this.saveFormatString !== "") && (sortstr !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
+                this.editor.setValue(this.lateststr + " " + "\n" + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
             else if (this.saveFormatString !== "")
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + " " + "WHERE" + " " + this.saveFormatString + "\n");
+                this.editor.setValue(this.lateststr + " " + "\n" + " " + "WHERE" + " " + this.saveFormatString + "\n");
             else if (sortstr !== "")
                 this.editor.setValue(this.lateststr + " " + "\n" + "\t" + " " + "ORDER BY" + " " + sortstr);
             else
@@ -654,24 +638,24 @@ var QueryBuilder = function (object, editobject) {
                 });
             }.bind(this));
             str = str.replace(/,\s*$/, "");
-            str += "\n FROM" + " " + this.ForGrp[this.firstvar].tables+"\n" ;
+            str += "\n FROM" + " " + this.ForGrp[this.firstvar].tables + "\n";
             //$.each(this.QueryDisply, function (key, value) {
             //    var updateKey = key.substring(key.length - 1, -1);
             //    str += ` ${updateKey} ${value.alias},`;//.........
             //});
             this.lateststr = str;
             //this.lateststr = str.substring(str.length - 1, -1);
-            this.finalQueryFn();
+            // this.finalQueryFn();
             str = this.JoinQuery(this.ForGrp);
             var sortstr = this.sortOrder.SortQuery(this.sortOrder.SorGrp);
             if ((str !== "") && (this.saveFormatString !== "") && (sortstr !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
+                this.editor.setValue(this.lateststr + " " + "\n" + str + " " + "WHERE" + " " + this.saveFormatString + "\n" + "ORDER BY" + " " + sortstr);
             else if ((this.saveFormatString !== "") && (str !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str + " " + "WHERE" + " " + this.saveFormatString + "\n");
+                this.editor.setValue(this.lateststr + " " + "\n" + str + " " + "WHERE" + " " + this.saveFormatString + "\n");
             else if ((sortstr !== "") && (str !== ""))
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str + " " + "ORDER BY" + " " + sortstr);
+                this.editor.setValue(this.lateststr + " " + "\n" + str + " " + "ORDER BY" + " " + sortstr);
             else
-                this.editor.setValue(this.lateststr + " " + "\n" + "\t" + str);
+                this.editor.setValue(this.lateststr + " " + "\n" + str);
 
         }
 
@@ -691,33 +675,59 @@ var QueryBuilder = function (object, editobject) {
         }
 
     }
- 
+
     this.finalQueryFn = function (event) {
         var temp = true;
         $(".keypressEventText").each(function (i, ob) {
-            if ($(ob).val().trim() === "") {
-                $("#saveError").html("please fill out fields").show().fadeOut("slow");
-                temp = false;
+            if ($(ob).prev().val() === "BETWEEN") {
+                if ($(ob).val().trim() === "" || $(ob).next().val().trim() === "") {
+                    temp = false;
+                }
+                for (var key in this.whereClauseObjects.condFlatObj) {
+                    if ($(ob).attr("flatObjId") === key) {
+                        if (this.whereClauseObjects.condFlatObj[key].Operator === "BETWEEN") {
+                            this.whereClauseObjects.condFlatObj[key].Value = $(ob).val().trim();
+                            this.whereClauseObjects.condFlatObj[key].valueSec = $(ob).next().val().trim();
+                        }
+                    }
+                }
+                
             }
-        });
+            else {
+                if ($(ob).val().trim() === "") {
+                    temp = false;
+                }
+                for (var key in this.whereClauseObjects.condFlatObj) {
+                    if ($(ob).attr("flatObjId") === key) {
+                        this.whereClauseObjects.condFlatObj[key].Value = $(ob).val();
+                    }
+                }
+            }
+        }.bind(this));
+
         $(".changeEventTextFn").each(function (i, ob) {
-            if ($(ob).val().trim() === "") {
-                $("#saveError").html("please fill out fields").show().fadeOut("slow");
-                temp = false;
+            if ($(ob).prev().val() === "BETWEEN") {
+                if ($(ob).val().trim() === "" || $(ob).next().val().trim() === "") {
+                    temp = false;
+                }
+            }
+            else {
+                if ($(ob).val().trim() === "") {
+
+                    temp = false;
+                }
             }
         });
-       // if (temp) {
-            var finalString = this.whereClauseObjects.recFinalQueryFn(this.whereClauseObjects.WHEREclouseQ);
-            this.saveFormatString = finalString.substr(1);
-            if (this.lateststr !== "")
-                this.mergeString = this.lateststr + " " + "\n"+ "WHERE" + " " + this.saveFormatString;
-            this.saveQueryObject.QueryString = btoa(this.mergeString);
-            this.editor.setValue((`${this.mergeString}`).replace(/,\s*$/, ""));
-      //  }
+
+        if (!temp) {
+            alert("please fill out fields");
+        }
+        var finalString = this.whereClauseObjects.recFinalQueryFn(this.whereClauseObjects.WHEREclouseQ);
+        this.saveFormatString = finalString.substr(1);
+        this.Qdisply();
     };
 
-    this.saveQBFn = function ()
-    {
+    this.saveQBFn = function () {
         var str = JSON.stringify(this.saveQueryObject);
         $.ajax({
             type: 'POST',
@@ -732,26 +742,31 @@ var QueryBuilder = function (object, editobject) {
         });
     };
 
-    this.renderTableOnEdit = function ()
-    {
-       for (var i = 0; i < this.ObjectSchema.TableCollection.length; i++) {
+    this.renderTableOnEdit = function () {
+        for (var i = 0; i < this.ObjectSchema.TableCollection.length; i++) {
             this.droploc = $("#designpane");
             this.tableName = this.ObjectSchema.TableCollection[i]["tableName"];
-            this.dropObj = $(".treeview").children('[tname= '+this.tableName+']')
+            this.dropObj = $(".treeview").children('[tname= ' + this.tableName + ']')
             this.left = this.ObjectSchema.TableCollection[i]["leftPos"];
             this.top = this.ObjectSchema.TableCollection[i]["topPos"];
             var objId = this.ObjectSchema.TableCollection[i]["id"];
             var tableAliasName = this.ObjectSchema.TableCollection[i]["aliasName"];
             this.tableOnDropAppend(objId);
+            for (var j = 0; j < this.ObjectSchema.TableCollection[i].columnsColl.length; j++) {
+                var colName = this.ObjectSchema.TableCollection[i].columnsColl[j].colNameStore;
+                var checkIdStore = this.ObjectSchema.TableCollection[i].columnsColl[j].checkIdStore;
+                // $('input[type="checkbox"]').on("click", this.get_parent.bind(this, colName));
+                $("body").on("click", "#" + checkIdStore, this.get_parent.bind(this));
+                $("#" + checkIdStore).click();
+            }
         }
     };
 
-    this.init = function ()
-    {
+    this.init = function () {
         this.appendDraggableTableNames();
         this.appendDragulaTableNames();
         this.makeDroppable();
-        this.saveQueryObject = new QueryObject();  
+        this.saveQueryObject = new QueryObject();
         this.sortOrder = new SqLsortOrder();
         this.whereClauseObjects = new WhereBuilder(this);
         this.saveQueryObject.Conditions = this.whereClauseObjects.WHEREclouseQ;
@@ -769,13 +784,13 @@ var QueryBuilder = function (object, editobject) {
                 foldGutter: { rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.brace, CodeMirror.fold.comment) },
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
             });
-        if (this.isNew)
-        {
+        if (this.isNew) {
         }
         else {
             this.renderTableOnEdit();
-        }        
-        
+            $(".saveQuery").click();
+        }
+
     };
 
     this.init();
